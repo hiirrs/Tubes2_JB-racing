@@ -1,0 +1,153 @@
+body{
+    background-color: #d3d0d0;
+    font-family: 'Roboto', sans-serif;
+}
+
+.precise-title {
+    position: absolute; /* Position the image absolutely within the container */
+    top: 50px; /* Place the top of the image at the top of the container */
+    left: 50%; /* Place the left of the image at 50% of the container's width */
+    transform: translateX(-50%); /* Move the image back horizontally by half of its own width */
+}
+
+.precise-detail1 {
+    width: 70px;
+    height: auto;
+    position: absolute;
+    top: 38.2%; /* Adjust the top position as a percentage of the viewport height */
+    left: calc(50% - 427px);
+}
+
+.precise-detail2 {
+    width: 760px;
+    height: auto;
+    position: absolute;
+    top: 50.4%;
+    right: calc(50% - 376px);
+}
+
+.precise-detail3 {
+    width: 70px;
+    height: auto;
+    position: absolute;
+    top: 51.3%; /* Adjust the top position as a percentage of the viewport height */
+    right: calc(50% - 425px);
+}
+
+.precise-detail4 {
+    width: 400px;
+    height: auto;
+    position: absolute;
+    top: 84%; /* Adjust the top position as a percentage of the viewport height */
+    right: calc(50% - 200px);
+}
+
+.container {
+    position: relative;
+    width: 100vw; /* Set container width to 100% of viewport width */
+    height: 100vh; /* Set container height to 100% of viewport height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Horizontally center the content */
+    align-items: center; /* Vertically center the content */
+}
+
+.button-container {
+    position: relative; /* Make sure the container is positioned */
+}
+
+
+
+.button {
+    background-color: #54534f; /* Blue color, you can change it to any color you like */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Padding around the button text */
+    margin-right: 10px;
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Cursor style */
+}
+
+.button:hover {
+    background-color: #1e1e18; /* Darker blue color on hover */
+}
+
+.button_bfs {
+    background-color: transparent; /* Remove default button background */
+    background-image: url('./assets/bfs1.png'); /* Set the background image */
+    background-size: cover; /* Scale the background image to cover the button */
+    width: 220px; /* Set button width */
+    height: 180px; /* Set button height */
+    border: none;
+    cursor: pointer;
+    margin-top: 5px;
+    margin-right: 70px;
+}
+
+.button_bfs:hover {
+    background-image: url('./assets/bfs2.png'); /* Change the background image on hover */
+}
+
+.button_ids {
+    background-color: transparent; /* Remove default button background */
+    background-image: url('./assets/ids1.png'); /* Set the background image */
+    background-size: cover; /* Scale the background image to cover the button */
+    width: 220px; /* Set button width */
+    height: 180px; /* Set button height */
+    border: none;
+    cursor: pointer;
+    margin-top: 5px;
+    margin-left: 70px;
+}
+
+.button_ids:hover {
+    background-image: url('./assets/ids2.png'); /* Change the background image on hover */
+}
+
+.centered {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.centered_choice {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+}
+
+.input-container {
+    margin-top: 25px; /* Add margin to separate input and output */
+  }
+
+.text-input {
+    padding: 25px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 630px;
+    font-family:'Courier New', Courier, monospace;
+    font-size: larger;
+}
+
+.output-box {
+    width: 300px; /* Adjust width as needed */
+    height: 100px; /* Adjust height as needed */
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px; /* Add margin to separate input and output */
+}
+  
+.output-box p {
+    margin: 0;
+}
