@@ -8,11 +8,12 @@ import (
 	"logic/internal/tools"
 )
 
-func BFS(ctx context.Context, siteURL, targetURL string) (bool) {
+func BFS(ctx context.Context, siteURL, targetURL string, languageCode string) (bool) {
 	queue := []*entities.Node{}
 
 	root := &entities.Node{
 		URL: siteURL,
+		Depth: 0,
 	}
 
 	queue = append(queue, root)
@@ -30,6 +31,7 @@ func BFS(ctx context.Context, siteURL, targetURL string) (bool) {
 		visited[currentNode.URL] = true
 
 		fmt.Println("Current Node: ", currentNode.URL)
+		fmt.Println("Depth: ", currentNode.Depth)
 
 		if currentNode.URL == targetURL {
 			return true
@@ -47,17 +49,17 @@ func BFS(ctx context.Context, siteURL, targetURL string) (bool) {
 		// fmt.Println("Visited: ")
 		// fmt.Println(visited)
 
-		childNodes, err := scraping.GetWikiNodes(ctx, currentNode.URL)
+		childNodes, err := scraping.GetWikiNodes(ctx, currentNode.URL, languageCode)
 		if err != nil {
 			fmt.Println(err)
 			return false
 		}
 
-		currentNode.Children = append(currentNode.Children, childNodes.Children...)
-
-		// entities.PrintTree(currentNode, 0)
-
-		queue = append(queue, childNodes.Children...)
+		for _, child := range childNodes.Children {
+			child.Depth = currentNode.Depth + 1
+			currentNode.AddChild(child)
+			queue = append(queue, child)
+		}
 	}
 
 	return false
