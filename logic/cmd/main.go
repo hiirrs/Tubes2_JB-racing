@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 
+	"logic/internal/bfs"
 	"logic/internal/tools"
-	"logic/internal/entities"
+	// "logic/internal/entities"
 )
 
 func main() {
@@ -19,14 +20,24 @@ func main() {
 	// fmt.Scanln(&startingWikipage)
 	// fmt.Print("Enter the target wikipedia page: ")
 	// fmt.Scanln(&targetWikipage)
-	fmt.Println("We are sorry. We can't handle your request yet.")
+	// fmt.Println("We are sorry. We can't handle your request yet.")
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	startingWikipageTrial := "https://en.wikipedia.org/wiki/United_States"
+	startingWikipageTrial := "https://en.wikipedia.org/wiki/Rat_king"
 
-	var trialNodes *entities.Node
-	trialNodes, _ = scraping.GetWikiNodes(ctx, startingWikipageTrial)
-	entities.PrintTree(trialNodes, 0)
+	languageCode := scraping.GetLanguageCode(startingWikipageTrial)
+
+	is_found := bfs.BFS(ctx, startingWikipageTrial, "https://en.wikipedia.org/wiki/Idola_theatri", languageCode)
+
+	if(is_found) {
+		fmt.Println("The target page is found!")
+	} else {
+		fmt.Println("The target page is not found!")
+	}
+
+	// var trialNodes *entities.Node
+	// trialNodes, _ = scraping.GetWikiNodes(ctx, startingWikipageTrial)
+	// entities.PrintTree(trialNodes, 0)
 }
