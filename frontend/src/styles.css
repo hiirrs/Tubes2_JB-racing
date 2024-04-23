@@ -1,11 +1,19 @@
-body{
-    background-color: #d3d0d0;
+html, body {
+    height: 2000px;
+    margin: 0;
+    background: linear-gradient(to bottom, #d9d9d9, #847c77);
+}
+
+.background-container {
+    min-height: 100%;
+    background: linear-gradient(to bottom, #d9d9d9, #847c77);
     font-family: 'Roboto', sans-serif;
+    /* Add any other styles you need for this container */
 }
 
 .precise-title {
     position: absolute; /* Position the image absolutely within the container */
-    top: 50px; /* Place the top of the image at the top of the container */
+    top: 45px; /* Place the top of the image at the top of the container */
     left: 50%; /* Place the left of the image at 50% of the container's width */
     transform: translateX(-50%); /* Move the image back horizontally by half of its own width */
 }
@@ -14,49 +22,38 @@ body{
     width: 70px;
     height: auto;
     position: absolute;
-    top: 38.2%; /* Adjust the top position as a percentage of the viewport height */
-    left: calc(50% - 427px);
+    top: 250px; /* Adjust the top position as a percentage of the viewport height */
+    left: calc(50% - 460px);
 }
 
 .precise-detail2 {
-    width: 760px;
+    width: 820px;
     height: auto;
     position: absolute;
-    top: 50.4%;
-    right: calc(50% - 376px);
+    top: 335px;
+    right: calc(50% - 420px);
+    z-index: 1;
 }
 
 .precise-detail3 {
     width: 70px;
     height: auto;
     position: absolute;
-    top: 51.3%; /* Adjust the top position as a percentage of the viewport height */
-    right: calc(50% - 425px);
+    top: 343px; /* Adjust the top position as a percentage of the viewport height */
+    right: calc(50% - 460px);
 }
 
 .precise-detail4 {
     width: 400px;
     height: auto;
     position: absolute;
-    top: 84%; /* Adjust the top position as a percentage of the viewport height */
+    top: 470px; /* Adjust the top position as a percentage of the viewport height */
     right: calc(50% - 200px);
-}
-
-.container {
-    position: relative;
-    width: 100vw; /* Set container width to 100% of viewport width */
-    height: 100vh; /* Set container height to 100% of viewport height */
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Horizontally center the content */
-    align-items: center; /* Vertically center the content */
 }
 
 .button-container {
     position: relative; /* Make sure the container is positioned */
 }
-
-
 
 .button {
     background-color: #54534f; /* Blue color, you can change it to any color you like */
@@ -104,9 +101,39 @@ body{
     background-image: url('./assets/ids2.png'); /* Change the background image on hover */
 }
 
+.button_go {
+    position: absolute;
+    top: 220px;
+    background-color: transparent; /* Remove default button background */
+    background-image: url('./assets/go1.png'); /* Set the background image */
+    background-size: contain; /* Scale the background image to cover the button */
+    width: 140px; /* Set button width */
+    height: 67px; /* Set button height */
+    left: 270px;
+    size-adjust: auto;
+    border: none;
+    cursor: pointer;
+    margin-top: 5px;
+    margin-right: 70px;
+}
+
+.button_go:hover {
+    background-image: url('./assets/go2.png'); /* Change the background image on hover */
+}
+
+.container {
+    position: relative;
+    width: 100vw; /* Set container width to 100% of viewport width */
+    height: 100vh; /* Set container height to 100% of viewport height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Horizontally center the content */
+    align-items: center; /* Vertically center the content */
+}
+
 .centered {
     position: absolute;
-    top: 0px;
+    top: 580px;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -114,17 +141,29 @@ body{
     margin-top: 20px;
 }
 
-.centered_choice {
+.centered_box {
     position: absolute;
-    top: 100%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
     justify-content: center;
+    margin-top: 20px;
+    
 }
 
 .input-container {
-    margin-top: 25px; /* Add margin to separate input and output */
+    margin-top: 20px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Horizontally center the content */
+    align-items: center; 
+    top: 335px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center; /* Add margin to separate input and output */
+    z-index: 1000;
   }
 
 .text-input {
@@ -134,20 +173,100 @@ body{
     width: 630px;
     font-family:'Courier New', Courier, monospace;
     font-size: larger;
+    margin-bottom: 20px;
+    z-index: 999;
+    font-weight: bold;
 }
 
 .output-box {
-    width: 300px; /* Adjust width as needed */
-    height: 100px; /* Adjust height as needed */
+    position: absolute;
+    width: 41%; /* Adjust width as needed */ /* Set maximum width */
+    height: auto; /* Adjust height as needed */
     background-color: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: x-large;
+    top: 30%; /* Position it below the first image */
+    left: 27%; /* Adjust left position to match the second image */
+    transform: translateX(-50%); /* Center the box horizontally */
+    padding: 10px; /* Add padding to the top */
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 100px; /* Add margin to separate input and output */
+    z-index: 2; /* Add margin to separate input and output */
 }
   
 .output-box p {
     margin: 0;
+}
+
+.suggestions1 {
+    position: absolute;
+    top: 75px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: calc(100% - 2px); /* Adjust width to match input width */
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+}
+  
+.suggestions1 li {
+    padding: 8px 16px;
+    cursor: pointer;
+    z-index: 1000;
+    text-align: left;
+}
+  
+.suggestions1 li:hover {
+    background-color: #f0f0f0;
+    z-index: 1000;
+}
+
+.suggestions2 {
+    position: absolute;
+    top: 170px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: calc(100% - 2px); /* Adjust width to match input width */
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    font-family: 'Courier New', Courier, monospace;
+}
+  
+.suggestions2 li {
+    padding: 8px 16px;
+    cursor: pointer;
+    z-index: 1000;
+    text-align: left;
+}
+  
+.suggestions2 li:hover {
+    background-color: #f0f0f0;
+    z-index: 1000;
+}
+
+.ready {
+    top: 0px;
+    position: relative;
+    width: auto; /* Set container width to 100% of viewport width */
+    height: auto; /* Set container height to 100% of viewport height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
