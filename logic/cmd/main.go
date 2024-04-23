@@ -1,6 +1,10 @@
 package main
 
 import (
+	// "encoding/json"
+	// "net/http"
+	// "log"
+
 	"context"
 	"fmt"
 	"time"
@@ -10,47 +14,63 @@ import (
 	// "logic/internal/entities"
 )
 
-func main() {
-	fmt.Println("Hi! Welcome to JB Racing Wikirace!")
-	// method := ""
-	// startingWikipage := ""
-	// targetWikipage := ""
-	// fmt.Print("How do you want to have your Wikirace handle (BFS/IDS)? ")
-	// fmt.Scanln(&method)
-	// fmt.Print("Enter the starting wikipedia page: ")
-	// fmt.Scanln(&startingWikipage)
-	// fmt.Print("Enter the target wikipedia page: ")
-	// fmt.Scanln(&targetWikipage)
-	// fmt.Println("We are sorry. We can't handle your request yet.")
+// func main(){
+// 	http.HandleFunc("/calculate", calculateHandler)
+// 	fmt.Println("Server is running on port 8080...")
+// 	http.ListenAndServe(":8080", nil)
+// }
 
+func main(){
+	fmt.Println("Hi! Welcome to JB Racing Wikirace!")
+
+	// var requestData struct {
+	// 	startingWikipageURL string json:"startInput"
+	// 	targetWikipageURL string json:"finishInput"
+	// 	method string json:"algorithm"
+	// }
+
+	// err := json.NewDecoder(r.Body).Decode(&requestData)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
+	startingWikipageURL := "https://en.wikipedia.org/wiki/Rat_king"
+	targetWikipageURL := "https://en.wikipedia.org/wiki/Idola_theatri"
+	method := "ids"
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	languageCode := scraping.GetLanguageCode(startingWikipageURL)
 
-	startingWikipageTrial := "https://en.wikipedia.org/wiki/Ariana_grande"
-
-	languageCode := scraping.GetLanguageCode(startingWikipageTrial)
-
+	pathFound := []string{}
 	startTime := time.Now()
-	path := getPath.SearchIDS(startingWikipageTrial, "https://en.wikipedia.org/wiki/SZA", ctx, languageCode)
-	if path != nil {
+	if (method == "ids"){
+		pathFound = getPath.SearchIDS(startingWikipageURL, targetWikipageURL, languageCode, ctx)
+	}
+	// } else if (method == "bfs"){
+	// 	path = getPath.BFS(ctx, startingWikipageURL, targetWikipageURL, languageCode)
+	// }
+
+	if pathFound != nil {
 		fmt.Println("The target page is found!")
-		getPath.PrintPath(path)
+		getPath.PrintPath(pathFound)
 	} else {
 		fmt.Println("The target page is not found!")
 	}
 	endTime := time.Now()
 	fmt.Println("Duration:", endTime.Sub(startTime))
 
-	// var trialNodes *entities.Node
-	// trialNodes, _ = scraping.GetWikiNodes(ctx, startingWikipageTrial)
-	// entities.PrintTree(trialNodes, 0)
+	// siteVisited := 0 // ini nanti kubuatkan fungsinya soon bgtz
 
-	// res := scraping.Links{}
-	// linksArr := make([]string, 2)
-	// linksArr[0] = "https://en.wikipedia.org/wiki/KFC"
-	// linksArr[1] = "https://en.wikipedia.org/wiki/Joko_Widodo"
+	// responseData := struct {
+	// 	Path      []string json:"path"
+	// 	Duration  string   json:"duration"
+	// 	SiteVisited int json:"visitedSites"
+	// }{
+	// 	Path:      path,
+	// 	Duration:  endTime.Sub(startTime).String(),
+	// 	SiteVisited: siteVisited,
+	// }
 
-	// res := <-scraping.GetAllWikiLinks(ctx, languageCode, linksArr)
-	// scraping.PrintLinks(res)
-
+	// w.Header().Set("Content-Type", "application/json")
+	// json.NewEncoder(w).Encode(responseData)
 }
