@@ -7,6 +7,7 @@ type Node struct {
 	URL     string
 	Children []*Node
 	Depth int
+	Visited bool
 }
 
 // AddChild adds a child node to the current node

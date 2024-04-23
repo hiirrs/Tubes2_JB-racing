@@ -1,12 +1,12 @@
 package scraping
 
 import (
-	"fmt"
+	// "fmt"
 	"strings"
 )
 
 func adjustLink(siteURLPrev string) (siteURL string){
-	fmt.Println("masuk adjust link")
+	// fmt.Println("masuk adjust link")
 	if strings.Contains(siteURLPrev, "/wiki/"){
 		if strings.Contains(siteURLPrev, "https://") {
 			return siteURLPrev

@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
-	"logic/internal/bfs"
-	"logic/internal/tools"
+	"logic/internal/getPath"
+	scraping "logic/internal/tools"
 	// "logic/internal/entities"
 )
 
@@ -25,19 +26,31 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	startingWikipageTrial := "https://en.wikipedia.org/wiki/Rat_king"
+	startingWikipageTrial := "https://en.wikipedia.org/wiki/Ariana_grande"
 
 	languageCode := scraping.GetLanguageCode(startingWikipageTrial)
 
-	is_found := bfs.BFS(ctx, startingWikipageTrial, "https://en.wikipedia.org/wiki/Idola_theatri", languageCode)
-
-	if(is_found) {
+	startTime := time.Now()
+	path := getPath.SearchIDS(startingWikipageTrial, "https://en.wikipedia.org/wiki/SZA", ctx, languageCode)
+	if path != nil {
 		fmt.Println("The target page is found!")
+		getPath.PrintPath(path)
 	} else {
 		fmt.Println("The target page is not found!")
 	}
+	endTime := time.Now()
+	fmt.Println("Duration:", endTime.Sub(startTime))
 
 	// var trialNodes *entities.Node
 	// trialNodes, _ = scraping.GetWikiNodes(ctx, startingWikipageTrial)
 	// entities.PrintTree(trialNodes, 0)
+
+	// res := scraping.Links{}
+	// linksArr := make([]string, 2)
+	// linksArr[0] = "https://en.wikipedia.org/wiki/KFC"
+	// linksArr[1] = "https://en.wikipedia.org/wiki/Joko_Widodo"
+
+	// res := <-scraping.GetAllWikiLinks(ctx, languageCode, linksArr)
+	// scraping.PrintLinks(res)
+
 }
