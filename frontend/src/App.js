@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AnimatedBackground from './components/background';
+import About from './components/about';
+import Navbar from './components/navbar';
 import './styles.css';
 import titleImage from './assets/title1.png';
 import bfsImage from './assets/choose_bfs.png';
@@ -12,22 +15,24 @@ import ready from './assets/question.png';
 
 
 function App() {
-  const [startInput, setstartInput] = useState('');
-  const [finishInput, setfinishInput] = useState('');
+  const [startInput, setStartInput] = useState('');
+  const [finishInput, setFinishInput] = useState('');
   const [startSuggestions, setStartSuggestions] = useState([]);
   const [finishSuggestions, setFinishSuggestions] = useState([]);
   const [showStartSuggestions, setShowStartSuggestions] = useState(false);
   const [showFinishSuggestions, setShowFinishSuggestions] = useState(false);
+  const [startSuggestionsURLs, setStartSuggestionsURLs] = useState([]);
+  const [finishSuggestionsURLs, setFinishSuggestionsURLs] = useState([]);
 
   const [algorithm, setAlgorithm] = useState(null);
 
   const handleChange1 = (event) => {
-    setstartInput(event.target.value);
+    setStartInput(event.target.value);
     setShowStartSuggestions(true);
   };
 
   const handleChange2 = (event) => {
-    setfinishInput(event.target.value);
+    setFinishInput(event.target.value);
     setShowFinishSuggestions(true);
   };
 
@@ -35,103 +40,132 @@ function App() {
     setAlgorithm(algorithm); // Set the chosen algorithm
   };
 
-  const handleSuggestionClick = (suggestion, inputType) => {
-    if (inputType === 'start') {
-      setstartInput(suggestion);
-      setShowStartSuggestions(false); // Hide suggestions after clicking
-    } else {
-      setfinishInput(suggestion);
-      setShowFinishSuggestions(false); // Hide suggestions after clicking
-    }
-  };
-
   useEffect(() => {
-    if (startInput.trim() !== '') {
-      fetchSuggestions(startInput, setStartSuggestions);
-    } else {
-      setStartSuggestions([]);
-    }
+    const timeoutId = setTimeout(() => {
+      if (startInput.trim() !== '') {
+        fetchSuggestions(startInput, setStartSuggestions, setStartSuggestionsURLs);
+      } else {
+        setStartSuggestions([]);
+        setStartSuggestionsURLs([]);
+      }
+    }, 50); // Adjust the delay according to your preference
+  
+    return () => clearTimeout(timeoutId);
   }, [startInput]);
-
+  
   useEffect(() => {
-    if (finishInput.trim() !== '') {
-      fetchSuggestions(finishInput, setFinishSuggestions);
-    } else {
-      setFinishSuggestions([]);
-    }
+    const timeoutId = setTimeout(() => {
+      if (finishInput.trim() !== '') {
+        fetchSuggestions(finishInput, setFinishSuggestions, setFinishSuggestionsURLs);
+      } else {
+        setFinishSuggestions([]);
+        setFinishSuggestionsURLs([]);
+      }
+    }, 50); 
+  
+    return () => clearTimeout(timeoutId);
   }, [finishInput]);
 
-  const fetchSuggestions = async (input, setSuggestions) => {
+  const fetchSuggestions = async (input, setSuggestions, setSuggestionsURLs) => {
     try {
-      const response = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&search=${input}&origin=*`);
-      const data = await response.json();
-      if (data && data[1]) {
-        setSuggestions(data[1]);
-      } else {
-        setSuggestions([]);
-      }
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
+    const response = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&limit=10&format=json&search=${input}&origin=*`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from Wikipedia API');
+    }
+    const data = await response.json();
+    if (data && data[1]) {
+      setSuggestions(data[1]);
+      setSuggestionsURLs(data[3]);
+    } else {
+      setSuggestions([]);
+      setSuggestionsURLs([]);
+      // Display a warning here
+      console.warn('No suggestions found for the input:', input);
+    }
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    // Display a warning here
+    console.warn('Failed to fetch suggestions. Please check your internet connection.');
+  }
+  };
+
+  const handleSuggestionClick = (suggestion, suggestionURL, inputType) => {
+    if (inputType === 'start') {
+      setStartInput(suggestion);
+      setShowStartSuggestions(false); // Hide suggestions after clicking
+      console.log("Clicked suggestion URL:", suggestionURL);
+    } else {
+      setFinishInput(suggestion);
+      setShowFinishSuggestions(false); // Hide suggestions after clicking
+      console.log("Clicked suggestion URL:", suggestionURL);
     }
   };
 
   return (
-    
-    <div>
-       <div>
+    <Router>
+      <div>
+        <Navbar /> {/* Include the NavigationBar component */}
+        <div>
             <AnimatedBackground />
             {/* Other components */}
         </div>
-      <div className="container">
-        <img src={titleImage} alt="Your Image" className="precise-title"/>
-        <div className="input-container">
-          <input type="text" placeholder="Enter start point" value={startInput} onChange={handleChange1} className="text-input"/>
-           {showStartSuggestions && startSuggestions.length > 0 &&  (
-            <ul className="suggestions1">
-              {startSuggestions.map((suggestion, index) => (
-                <li key={index} onClick={() => handleSuggestionClick(suggestion, 'start')}>
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          )}
-          <input type="text" placeholder="Enter finish point" value={finishInput} onChange={handleChange2} className="text-input"/>
-          {showFinishSuggestions && finishSuggestions.length > 0 && (
-            <ul className="suggestions2">
-              {finishSuggestions.map((suggestion, index) => (
-                <li key={index} onClick={() => handleSuggestionClick(suggestion, 'finish')}>
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <img src={detail1} alt="Your Image" className="precise-detail1"/>
-        <img src={detail2} alt="Your Image" className="precise-detail2"/>
-        <img src={detail3} alt="Your Image" className="precise-detail3"/>
-        <img src={ready} alt="Your Image" className="precise-detail4"/>
-        <div className="centered">
-          <button className="button_bfs" onClick={() => handleButtonClick("bfs")}></button>
-          <button className="button_ids" onClick={() => handleButtonClick("ids")}></button>
-        </div>
-        {algorithm && (
-          <div style={{position:'relative', top:'500px'}}>
-            <img
-              src={chosen}
-              style={{width:'100%', height:'auto'}}
-            />
-            <img src={algorithm === "bfs" ? bfsImage : idsImage} alt={algorithm === "bfs" ? "BFS Image" : "IDS Image"} style={{ position: 'absolute', width:'28%', height:'auto', top: '18px', left: '63%', zIndex: '1' }} />
-            <div className='output-box'>
-              <p> <strong>{startInput}</strong> to <strong>{finishInput}</strong>?</p>
-            </div>
-            <div>
-              <button className="button_go"></button>          
-            </div>
-
+        <div className="container">
+        <Routes>
+            <Route path="/about" element={<About />} />
+          </Routes>
+          <img src={titleImage} alt="Your Image" className="precise-title"/>
+          <div className="input-container">
+            <input type="text" placeholder="Enter start point" value={startInput} onChange={handleChange1} className="text-input"/>
+            {showStartSuggestions && startSuggestions.length > 0 &&  (
+              <ul className="suggestions1">
+                {startSuggestions.map((suggestion, index) => (
+                  <li key={index} onClick={() => handleSuggestionClick(suggestion, startSuggestionsURLs[index], 'start')}>
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <input type="text" placeholder="Enter finish point" value={finishInput} onChange={handleChange2} className="text-input"/>
+            {showFinishSuggestions && finishSuggestions.length > 0 && (
+              <ul className="suggestions2">
+                {finishSuggestions.map((suggestion, index) => (
+                  <li key={index} onClick={() => handleSuggestionClick(suggestion, finishSuggestionsURLs[index], 'finish')}>
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-        )}
+          <img src={detail1} alt="Your Image" className="precise-detail1"/>
+          <img src={detail2} alt="Your Image" className="precise-detail2"/>
+          <img src={detail3} alt="Your Image" className="precise-detail3"/>
+          <img src={ready} alt="Your Image" className="precise-detail4"/>
+          <div className="centered">
+            <button className="button_bfs" onClick={() => handleButtonClick("bfs")}></button>
+            <button className="button_ids" onClick={() => handleButtonClick("ids")}></button>
+          </div>
+          {algorithm && (
+            <div style={{position:'absolute', top:'750px'}}>
+              <img
+                src={chosen}
+                style={{width:'100%', height:'auto'}}
+              />
+              <img src={algorithm === "bfs" ? bfsImage : idsImage} alt={algorithm === "bfs" ? "BFS Image" : "IDS Image"} style={{ position: 'absolute', width:'28%', height:'auto', top: '18px', left: '63%', zIndex: '1' }} />
+              <div className='output-box'>
+                <p> <strong>{startInput}</strong> to <strong>{finishInput}</strong>?</p>
+              </div>
+              <div>
+                <button className="button_go"></button>          
+              </div>
+
+            </div>
+          )}
+        </div>
+        <Routes>
+          <Route path="/about" component={About} /> {/* Add this Route */}
+        </Routes>
       </div>
-    </div>
+    </Router>
 
       
       

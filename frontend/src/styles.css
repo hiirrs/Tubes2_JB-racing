@@ -8,21 +8,30 @@ html, body {
     min-height: 100%;
     background: linear-gradient(to bottom, #d9d9d9, #847c77);
     font-family: 'Roboto', sans-serif;
-    /* Add any other styles you need for this container */
 }
 
+.nav-link {
+    color: #333; /* Change the color to your desired color */
+    text-decoration: none; /* Remove underline */
+    margin-right: 20px; /* Adjust spacing if needed */
+  }
+  
+  .nav-link:hover {
+    color: #666; /* Change color on hover */
+  }
+
 .precise-title {
-    position: absolute; /* Position the image absolutely within the container */
-    top: 45px; /* Place the top of the image at the top of the container */
-    left: 50%; /* Place the left of the image at 50% of the container's width */
-    transform: translateX(-50%); /* Move the image back horizontally by half of its own width */
+    position: absolute;
+    top: 45px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .precise-detail1 {
     width: 70px;
     height: auto;
     position: absolute;
-    top: 250px; /* Adjust the top position as a percentage of the viewport height */
+    top: 250px;
     left: calc(50% - 460px);
 }
 
@@ -39,7 +48,7 @@ html, body {
     width: 70px;
     height: auto;
     position: absolute;
-    top: 343px; /* Adjust the top position as a percentage of the viewport height */
+    top: 343px;
     right: calc(50% - 460px);
 }
 
@@ -47,34 +56,34 @@ html, body {
     width: 400px;
     height: auto;
     position: absolute;
-    top: 470px; /* Adjust the top position as a percentage of the viewport height */
+    top: 470px;
     right: calc(50% - 200px);
 }
 
 .button-container {
-    position: relative; /* Make sure the container is positioned */
+    position: relative;
 }
 
 .button {
-    background-color: #54534f; /* Blue color, you can change it to any color you like */
-    color: white; /* Text color */
-    padding: 10px 20px; /* Padding around the button text */
+    background-color: #54534f;
+    color: white;
+    padding: 10px 20px;
     margin-right: 10px;
-    border: none; /* No border */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Cursor style */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .button:hover {
-    background-color: #1e1e18; /* Darker blue color on hover */
+    background-color: #1e1e18;
 }
 
 .button_bfs {
-    background-color: transparent; /* Remove default button background */
-    background-image: url('./assets/bfs1.png'); /* Set the background image */
-    background-size: cover; /* Scale the background image to cover the button */
-    width: 220px; /* Set button width */
-    height: 180px; /* Set button height */
+    background-color: transparent;
+    background-image: url('./assets/bfs1.png');
+    background-size: cover;
+    width: 220px;
+    height: 180px;
     border: none;
     cursor: pointer;
     margin-top: 5px;
@@ -82,15 +91,15 @@ html, body {
 }
 
 .button_bfs:hover {
-    background-image: url('./assets/bfs2.png'); /* Change the background image on hover */
+    background-image: url('./assets/bfs2.png');
 }
 
 .button_ids {
-    background-color: transparent; /* Remove default button background */
-    background-image: url('./assets/ids1.png'); /* Set the background image */
-    background-size: cover; /* Scale the background image to cover the button */
-    width: 220px; /* Set button width */
-    height: 180px; /* Set button height */
+    background-color: transparent;
+    background-image: url('./assets/ids1.png');
+    background-size: cover;
+    width: 220px; 
+    height: 180px;
     border: none;
     cursor: pointer;
     margin-top: 5px;
@@ -98,18 +107,18 @@ html, body {
 }
 
 .button_ids:hover {
-    background-image: url('./assets/ids2.png'); /* Change the background image on hover */
+    background-image: url('./assets/ids2.png');
 }
 
 .button_go {
     position: absolute;
     top: 220px;
-    background-color: transparent; /* Remove default button background */
-    background-image: url('./assets/go1.png'); /* Set the background image */
-    background-size: contain; /* Scale the background image to cover the button */
-    width: 140px; /* Set button width */
-    height: 67px; /* Set button height */
-    left: 270px;
+    background-color: transparent; 
+    background-image: url('./assets/go1.png');
+    background-size: contain; 
+    width: 140px;
+    height: 67px; 
+    left: 39%;
     size-adjust: auto;
     border: none;
     cursor: pointer;
@@ -118,17 +127,17 @@ html, body {
 }
 
 .button_go:hover {
-    background-image: url('./assets/go2.png'); /* Change the background image on hover */
+    background-image: url('./assets/go2.png'); 
 }
 
 .container {
     position: relative;
-    width: 100vw; /* Set container width to 100% of viewport width */
-    height: 100vh; /* Set container height to 100% of viewport height */
+    width: 100vw; 
+    height: 100vh; 
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Horizontally center the content */
-    align-items: center; /* Vertically center the content */
+    justify-content: center;
+    align-items: center; 
 }
 
 .centered {
@@ -157,12 +166,12 @@ html, body {
     position: absolute;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Horizontally center the content */
+    justify-content: center;
     align-items: center; 
     top: 335px;
     left: 50%;
     transform: translate(-50%, -50%);
-    text-align: center; /* Add margin to separate input and output */
+    text-align: center; 
     z-index: 1000;
   }
 
@@ -180,22 +189,22 @@ html, body {
 
 .output-box {
     position: absolute;
-    width: 41%; /* Adjust width as needed */ /* Set maximum width */
-    height: auto; /* Adjust height as needed */
+    width: 41%;
+    height: auto;
     background-color: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
     text-align: center;
     font-family: 'Courier New', Courier, monospace;
     font-size: x-large;
-    top: 30%; /* Position it below the first image */
-    left: 27%; /* Adjust left position to match the second image */
-    transform: translateX(-50%); /* Center the box horizontally */
-    padding: 10px; /* Add padding to the top */
+    top: 30%; 
+    left: 27%;
+    transform: translateX(-50%);
+    padding: 10px; 
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2; /* Add margin to separate input and output */
+    z-index: 2; 
 }
   
 .output-box p {
@@ -212,7 +221,7 @@ html, body {
     list-style: none;
     padding: 0;
     margin: 0;
-    width: calc(100% - 2px); /* Adjust width to match input width */
+    width: calc(100% - 2px);
     max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
@@ -242,7 +251,7 @@ html, body {
     list-style: none;
     padding: 0;
     margin: 0;
-    width: calc(100% - 2px); /* Adjust width to match input width */
+    width: calc(100% - 2px); 
     max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
@@ -264,8 +273,8 @@ html, body {
 .ready {
     top: 0px;
     position: relative;
-    width: auto; /* Set container width to 100% of viewport width */
-    height: auto; /* Set container height to 100% of viewport height */
+    width: auto;
+    height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;

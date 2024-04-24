@@ -26,12 +26,12 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	startingWikipageTrial := "https://en.wikipedia.org/wiki/Ariana_grande"
+	startingWikipageTrial := "https://en.wikipedia.org/wiki/Jokowi"
 
 	languageCode := scraping.GetLanguageCode(startingWikipageTrial)
 
 	startTime := time.Now()
-	path := getPath.SearchIDS(startingWikipageTrial, "https://en.wikipedia.org/wiki/SZA", ctx, languageCode)
+	path := getPath.SearchIDS(startingWikipageTrial, "https://en.wikipedia.org/wiki/Indonesia", ctx, languageCode)
 	if path != nil {
 		fmt.Println("The target page is found!")
 		getPath.PrintPath(path)
