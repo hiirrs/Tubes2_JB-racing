@@ -13,6 +13,7 @@ import (
 	"logic/internal/entities"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gocolly/colly/v2"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,7 +31,6 @@ func GetPage(ctx context.Context, method, siteURL string, timeout int) (*goquery
 		return nil, fmt.Errorf("failed to create http request context: %w", err)
 	}
 	// fmt.Println("masuk request created")
-
 
 	// Use default http Client.
 	httpClient := &http.Client{
@@ -64,28 +64,57 @@ func GetPage(ctx context.Context, method, siteURL string, timeout int) (*goquery
 }
 
 func GetLanguageCode(url string) string {
-    parts := strings.Split(url, ".")
-    if len(parts) >= 2 {
-        return parts[0][8:] // Extract the language code after "https://"
-    }
-    return ""
+	parts := strings.Split(url, ".")
+	if len(parts) >= 2 {
+		return parts[0][8:] // Extract the language code after "https://"
+	}
+	return ""
 }
 
 func isWikipediaArticle(url string, languageCode string) bool {
-    pattern := fmt.Sprintf(`^https:\/\/%s\.wikipedia\.org\/wiki\/[^:]+$`, languageCode)
-    match, _ := regexp.MatchString(pattern, url)
+	pattern := fmt.Sprintf(`^https:\/\/%s\.wikipedia\.org\/wiki\/[^:]+$`, languageCode)
+	match, _ := regexp.MatchString(pattern, url)
 
-	if !match { 
+	if !match {
 		return false
 	} else {
 		return !strings.Contains(url, "(identifier)")
 	}
 }
 
+func GetChildLinks(url string, languageCode string) (childLinks []string) {
+	// Create a new Collector
+	c := colly.NewCollector(
+		// Restrict crawling to only wikipedia.org domain
+		colly.AllowedDomains("en.wikipedia.org"),
+	)
+
+	// Slice to store the links found
+	// var childLinks []string
+
+	// On every a element which has href attribute call callback
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		link := e.Attr("href")
+		fmt.Println(link)
+
+		// Check if the link starts with '/wiki/' (Wikipedia article)
+		if strings.HasPrefix(link, "/wiki/") && isWikipediaArticle(link, languageCode) {
+			// Add the link to the slice of links
+			childLinks = append(childLinks, link)
+
+		}
+	})
+
+	// Start scraping on the provided URL
+	c.Visit(url)
+
+	return childLinks
+}
+
 // See also wikis page
-func GetWikiNodes(ctx context.Context, siteURL string, languageCode string) (nodes *entities.Node, err error){
+func GetWikiNodes(ctx context.Context, siteURL string, languageCode string) (nodes *entities.Node, err error) {
 	// fmt.Println("masuk GetWikiNodes")
-	doc, err := GetPage(ctx,  http.MethodGet, siteURL, 300000)
+	doc, err := GetPage(ctx, http.MethodGet, siteURL, 300000)
 	if err != nil {
 		log.Error(err)
 		return nil, err
@@ -93,14 +122,13 @@ func GetWikiNodes(ctx context.Context, siteURL string, languageCode string) (nod
 
 	// fmt.Println("masuk GetWikiNodes ga error")
 
-
 	nodes = &entities.Node{
 		URL: siteURL,
 	}
 
-	doc.Find(".mw-content-ltr.mw-parser-output ul").Each(func(i int, ul *goquery.Selection){
+	doc.Find(".mw-content-ltr.mw-parser-output ul").Each(func(i int, ul *goquery.Selection) {
 		// fmt.Printf("masuk find ul")
-		ul.Find("li").Each(func(j int, li *goquery.Selection){
+		ul.Find("li").Each(func(j int, li *goquery.Selection) {
 			// fmt.Printf("masuk find li")
 
 			childSiteURL, exist := li.Find("a[href*='/wiki/']").Attr("href")
@@ -108,7 +136,7 @@ func GetWikiNodes(ctx context.Context, siteURL string, languageCode string) (nod
 				// fmt.Printf("URL: %s\n", childSiteURL)
 				childSiteURL = adjustLink(childSiteURL)
 				if isWikipediaArticle(childSiteURL, languageCode) {
-					nodes.AddChild(&entities.Node{URL: childSiteURL,})
+					nodes.AddChild(&entities.Node{URL: childSiteURL})
 				}
 			}
 		})
@@ -120,47 +148,47 @@ func GetWikiNodes(ctx context.Context, siteURL string, languageCode string) (nod
 type Links map[string][]string
 
 func GetAllWikiLinks(ctx context.Context, languageCode string, queueLinks []string) chan Links {
-    var wg sync.WaitGroup
-    res := make(chan Links)
+	var wg sync.WaitGroup
+	res := make(chan Links)
 
-    go func() {
-        defer close(res)
+	go func() {
+		defer close(res)
 
-        var mu sync.Mutex
-        links := make(Links)
+		var mu sync.Mutex
+		links := make(Links)
 
-        for _, link := range queueLinks {
-            wg.Add(1)
-            childLinks, err := GetWikiLinks(ctx, link, languageCode, &wg)
-            if err != nil {
-                // Handle error
-                log.Error(err)
-                continue // Continue to the next link in case of error
-            }
-            // Merge the childLinks into the 'links' map
-            mu.Lock()
-            links[link] = childLinks
-            mu.Unlock()
-        }
-        wg.Wait()
-        res <- links
-    }()
-    return res
+		for _, link := range queueLinks {
+			wg.Add(1)
+			childLinks, err := GetWikiLinks(ctx, link, languageCode, &wg)
+			if err != nil {
+				// Handle error
+				log.Error(err)
+				continue // Continue to the next link in case of error
+			}
+			// Merge the childLinks into the 'links' map
+			mu.Lock()
+			links[link] = childLinks
+			mu.Unlock()
+		}
+		wg.Wait()
+		res <- links
+	}()
+	return res
 }
 
-func GetWikiLinks(ctx context.Context, siteURL, languageCode string, wg *sync.WaitGroup) (childLinks []string, err error){
+func GetWikiLinks(ctx context.Context, siteURL, languageCode string, wg *sync.WaitGroup) (childLinks []string, err error) {
 	defer wg.Done()
 	// fmt.Println("masuk GetWikiNodes")
-	doc, err := GetPage(ctx,  http.MethodGet, siteURL, 300000)
+	doc, err := GetPage(ctx, http.MethodGet, siteURL, 300000)
 	if err != nil {
 		log.Error(err)
 		return nil, err
 	}
 	// fmt.Println("masuk GetWikiNodes ga error")
 	childs := make([]string, 0)
-	doc.Find(".mw-content-ltr.mw-parser-output ul").Each(func(i int, ul *goquery.Selection){
+	doc.Find(".mw-content-ltr.mw-parser-output ul").Each(func(i int, ul *goquery.Selection) {
 		// fmt.Printf("masuk find ul")
-		ul.Find("li").Each(func(j int, li *goquery.Selection){
+		ul.Find("li").Each(func(j int, li *goquery.Selection) {
 			// fmt.Printf("masuk find li")
 
 			childSiteURL, exist := li.Find("a[href*='/wiki/']").Attr("href")
@@ -185,4 +213,31 @@ func PrintLinks(links Links) {
 		}
 		fmt.Println()
 	}
+}
+
+func GetWikiLink(ctx context.Context, siteURL, languageCode string) (childLinks []string, err error) {
+	// fmt.Println("masuk GetWikiNodes")
+	doc, err := GetPage(ctx, http.MethodGet, siteURL, 300000)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	// fmt.Println("masuk GetWikiNodes ga error")
+	childs := make([]string, 0)
+	doc.Find(".mw-content-ltr.mw-parser-output ul").Each(func(i int, ul *goquery.Selection) {
+		// fmt.Printf("masuk find ul")
+		ul.Find("li").Each(func(j int, li *goquery.Selection) {
+			// fmt.Printf("masuk find li")
+
+			childSiteURL, exist := li.Find("a[href*='/wiki/']").Attr("href")
+			if exist {
+				// fmt.Printf("URL: %s\n", childSiteURL)
+				childSiteURL = adjustLink(childSiteURL)
+				if isWikipediaArticle(childSiteURL, languageCode) {
+					childs = append(childs, childSiteURL)
+				}
+			}
+		})
+	})
+	return childs, nil
 }
