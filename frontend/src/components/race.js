@@ -20,6 +20,9 @@ function Race() {
   const [startSuggestionsURLs, setStartSuggestionsURLs] = useState([]);
   const [finishSuggestionsURLs, setFinishSuggestionsURLs] = useState([]);
 
+  const [error, setError] = useState(null); // Define error state
+
+
   const [algorithm, setAlgorithm] = useState(null);
 
   const handleChange1 = (event) => {
@@ -35,6 +38,113 @@ function Race() {
   const handleButtonClick = (algorithm) => {
     setAlgorithm(algorithm); // Set the chosen algorithm
   };
+
+  const handleGoClick = () => {
+    // Check if startInput and finishInput are not empty
+    if (startInput.trim() === '' || finishInput.trim() === '') {
+        console.warn('Please enter both start and finish points.');
+        setError('Please enter both start and finish points.');
+        return;
+    }
+
+    // Fetch start URL
+    const startUrlPromise = fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&limit=1&format=json&search=${startInput}&origin=*`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch data from Wikipedia API');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data[3] && data[3][0]) {
+                return data[3][0];
+            } else {
+                throw new Error('No URL found for start point');
+            }
+        });
+
+    // Fetch finish URL
+    const finishUrlPromise = fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&limit=1&format=json&search=${finishInput}&origin=*`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch data from Wikipedia API');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data[3] && data[3][0]) {
+                return data[3][0];
+            } else {
+                throw new Error('No URL found for finish point');
+            }
+        });
+
+    // Wait for both promises to resolve
+    Promise.all([startUrlPromise, finishUrlPromise])
+        .then(([startUrl, finishUrl]) => {
+            // Make the POST request to the Go backend
+            fetch('http://localhost:8080/api/race', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ startUrl, finishUrl, algorithm }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                setError(null);
+                return response.json();
+            })
+            .then(data => {
+                // Handle the response data
+                console.log('Response from backend:', data);
+                // Update UI or do other actions based on the response
+            })
+            .catch(error => {
+                console.error('Error processing race:', error);
+                setError('Error processing race: ' + error.message);
+                // Handle errors, show error message, etc.
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching URLs:', error);
+            setError('Error processing race: ' + error.message);
+            
+            // Handle errors, show error message, etc.
+        });
+};
+
+//   const handleGoClick = () => {
+//     // Construct start URL and finish URL
+//     const startUrl = `https://en.wikipedia.org/wiki/${startInput}`;
+//     const finishUrl = `https://en.wikipedia.org/wiki/${finishInput}`;
+
+//     // Make the POST request to the Go backend
+//     fetch('http://localhost:8080/api/race', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ startUrl, finishUrl, algorithm }),
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return response.json();
+//     })
+//     .then(data => {
+//         // Handle the response data
+//         console.log('Response from backend:', data);
+//         // Update UI or do other actions based on the response
+//     })
+//     .catch(error => {
+//         console.error('Error processing race:', error);
+//         // Handle errors, show error message, etc.
+//     });
+// };
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -142,9 +252,15 @@ function Race() {
                 <p> <strong>{startInput}</strong> to <strong>{finishInput}</strong>?</p>
               </div>
               <div>
-                <button className="button_go"></button>          
+                <button className="button_go" onClick={handleGoClick}></button> 
+                {error && <div className="error-warning">{error}</div>}         
               </div>
-
+              <div>
+                
+              </div>
+              <div>
+                {/* Result: {result} */}
+              </div>
             </div>
           )}
         </div>
