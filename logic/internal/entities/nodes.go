@@ -10,12 +10,6 @@ type Node struct {
 }
 
 func (n *Node) AddChild(child *Node) {
-	for _, existingChild := range n.Children {
-		if existingChild.URL == child.URL {
-			return
-		}
-	}
-
 	child.Parent = n
 	child.Depth = n.Depth + 1
 	n.Children = append(n.Children, child)
