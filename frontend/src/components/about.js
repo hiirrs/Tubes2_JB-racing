@@ -1,12 +1,13 @@
-// About.js
-
 import React from 'react';
+import '../assets/about/about.css'
 
 function About() {
   return (
-    <div>
-      <h1>About Us</h1>
-      <p>This is the About page content.</p>
+    <div className='bout-container'>
+      <button className='button_biilly'></button>
+      <button className='button_hira'></button>
+      <button className='button_shulhy'></button>
+      
     </div>
   );
 }

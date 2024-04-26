@@ -38,7 +38,7 @@ func calculateHandler(w http.ResponseWriter, r *http.Request) {
 	languageCode := scraping.GetLanguageCode(startingWikipage)
 
 	startTime := time.Now()
-	path := getPath.SearchIDS(startingWikipage, finishWikipage, ctx, languageCode)
+	path := getPath.SearchIDS(startingWikipage, finishWikipage, ctx, languageCode, 5)
 	endTime := time.Now()
 
 	responseData := struct {

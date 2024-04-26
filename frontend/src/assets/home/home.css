@@ -1,0 +1,59 @@
+.precise-welcome {
+    position: absolute;
+    height: 200px;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.know-race{
+    position: absolute;
+    top: 500px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    margin-top: 0px;
+}
+
+.button_know {
+    background-color: transparent;
+    background-image: url('./know.png');
+    background-size: cover;
+    width: 380px;
+    height: 300px;
+    border: none;
+    cursor: pointer;
+    margin-top: 45px;
+    margin-right: 1px;
+}
+
+.button_know:hover {
+    transform: scale(1.1);
+}
+
+.button_race {
+    background-color: transparent;
+    background-image: url('./race.png');
+    background-size: cover;
+    width: 380px;
+    height: 340px;
+    border: none;
+    cursor: pointer;
+    margin-top: 5px;
+    margin-right: 50px;
+}
+
+.button_race:hover {
+    transform: scale(1.1);
+}
+
+
+.precise-race {
+    width: 820px;
+    height: auto;
+    position: absolute;
+    top: 335px;
+    right: calc(50% - 420px);
+    z-index: 1;
+}

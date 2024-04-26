@@ -26,8 +26,8 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	startingWikipageTrial := "https://en.wikipedia.org/wiki/Ariana_Grande"
-	targetPage := "https://en.wikipedia.org/wiki/Billboard_(magazine)"
+	startingWikipageTrial := "https://en.wikipedia.org/wiki/Idola_theatri"
+	targetPage := "https://en.wikipedia.org/wiki/Francis_bacon"
 
 	languageCode := scraping.GetLanguageCode(startingWikipageTrial)
 

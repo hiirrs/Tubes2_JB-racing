@@ -1,0 +1,86 @@
+/* Navbar styles */
+nav {
+    background-color: #000000;
+    height: 70px;
+    width: 100vw;
+    display: flex;
+    position: relative;
+}
+  
+.nav ul {
+    list-style-type: none;
+    display: flex;
+}
+  
+.nav li {
+    display: inline;
+}
+  
+.nav-home-link {
+    top: 15%;
+    background-image: url('./home1.png');
+    position: absolute;
+    left: 1%;
+    height: 50px;
+    width: 150px;
+    font-family: 'Roboto', sans-serif;
+    transition: all 0.1s ease; /* Add transition for smooth hover effect */
+}
+  
+.nav-home-link:hover {
+    background-image: url('./home2.png');
+    height: 46px;
+    width: 146px;
+}
+  
+.active .nav-home-link {
+    background-image: url('./home3.png');
+    width: 146px;
+    height: 46px;
+}
+
+.nav-race-link {
+    top: 15%;
+    background-image: url('./race1.png');
+    position: absolute;
+    left: calc(1% + 150px + 5px);
+    height: 50px;
+    width: 150px;
+    font-family: 'Roboto', sans-serif;
+    transition: all 0.1s ease; /* Add transition for smooth hover effect */
+}
+  
+.nav-race-link:hover {
+    background-image: url('./race2.png');
+    height: 46px;
+    width: 146px;
+}
+  
+.active .nav-race-link {
+    background-image: url('./race3.png');
+    width: 146px;
+    height: 46px;
+}
+
+.nav-bout-link {
+    top: 15%;
+    background-image: url('./boutus1.png');
+    position: absolute;
+    right: 1%;
+    height: 50px;
+    width: 250px;
+    font-family: 'Roboto', sans-serif;
+    transition: all 0.1s ease; /* Add transition for smooth hover effect */
+}
+  
+.nav-bout-link:hover {
+    background-image: url('./boutus2.png');
+    height: 46px;
+    width: 246px;
+}
+  
+.active .nav-bout-link {
+    background-image: url('./boutus3.png');
+    height: 46px;
+    width: 246px;
+}
