@@ -9,14 +9,14 @@ import (
 	scraping "logic/internal/tools"
 )
 
-func NewNode(URL string, depth int) *entities.Node {
-	return &entities.Node{
-		URL:      URL,
-		Children: []*entities.Node{},
-		Depth:    depth,
-		Visited:  false,
-	}
-}
+// func NewNode(URL string, depth int) *entities.Node {
+// 	return &entities.Node{
+// 		URL:      URL,
+// 		Children: []*entities.Node{},
+// 		Depth:    depth,
+// 		Visited:  false,
+// 	}
+// }
 
 func PrintPath(path []*entities.Node) {
 	var sb strings.Builder

@@ -8,41 +8,41 @@ import (
 	"logic/internal/tools"
 )
 
-func BFSUpdate(ctx context.Context, siteURL, targetURL string, languageCode string) bool {
-    queue := []string{} // Queue of URLs to visit
-    visited := make(map[string]bool) // Map to keep track of visited URLs
+// func BFSUpdate(ctx context.Context, siteURL, targetURL string, languageCode string) bool {
+//     queue := []string{} // Queue of URLs to visit
+//     visited := make(map[string]bool) // Map to keep track of visited URLs
 
-    queue = append(queue, siteURL) // Add the starting URL to the queue
+//     queue = append(queue, siteURL) // Add the starting URL to the queue
 
-    for len(queue) > 0 {
-        // Dequeue the URL at the front of the queue
-        currentURL := queue[0]
-        queue = queue[1:]
+//     for len(queue) > 0 {
+//         // Dequeue the URL at the front of the queue
+//         currentURL := queue[0]
+//         queue = queue[1:]
 
-        // If the current URL is the target URL, return true
-        if currentURL == targetURL {
-            return true
-        }
+//         // If the current URL is the target URL, return true
+//         if currentURL == targetURL {
+//             return true
+//         }
 
-        // Skip if already visited
-        if visited[currentURL] {
-            continue
-        }
+//         // Skip if already visited
+//         if visited[currentURL] {
+//             continue
+//         }
 
-        // Mark current URL as visited
-        visited[currentURL] = true
+//         // Mark current URL as visited
+//         visited[currentURL] = true
 
-        // Get the child URLs of the current URL
-        links := <- scraping.GetAllWikiLinks(ctx, languageCode, []string{currentURL})
-		// scraping.PrintLinks(links)
+//         // Get the child URLs of the current URL
+//         links := <- scraping.GetAllWikiLinks(ctx, languageCode, []string{currentURL})
+// 		// scraping.PrintLinks(links)
 
-        // Enqueue the child URLs
-		queue = append(queue, links[currentURL]...)
-    }
+//         // Enqueue the child URLs
+// 		queue = append(queue, links[currentURL]...)
+//     }
 
-    // If target URL not found, return false
-    return false
-}
+//     // If target URL not found, return false
+//     return false
+// }
 
 
 func BFS(ctx context.Context, siteURL, targetURL string, languageCode string) (bool) {

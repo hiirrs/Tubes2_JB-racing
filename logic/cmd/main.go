@@ -1,17 +1,22 @@
 package main
 
 import (
-	"context"
+	// "context"
 	"fmt"
+	// "sync"
 	"time"
 
-	"logic/internal/getPath"
+	// "logic/internal/getPath"
+	"logic/internal/entities"
 	scraping "logic/internal/tools"
 	// "logic/internal/entities"
 )
 
 func main() {
 	fmt.Println("Hi! Welcome to JB Racing Wikirace!")
+	// var childLinks []string
+	// var wg sync.WaitGroup
+	// var mu sync.Mutex // Add a mutex
 	// method := ""
 	// startingWikipage := ""
 	// targetWikipage := ""
@@ -23,22 +28,37 @@ func main() {
 	// fmt.Scanln(&targetWikipage)
 	// fmt.Println("We are sorry. We can't handle your request yet.")
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	// ctx, cancel := context.WithCancel(context.Background())
+	// defer cancel()
 
-	startingWikipageTrial := "https://en.wikipedia.org/wiki/Idola_theatri"
-	targetPage := "https://en.wikipedia.org/wiki/Francis_bacon"
+	startingWikipageTrial := "https://en.wikipedia.org/wiki/Ariana_Grande"
+	// targetPage := "https://en.wikipedia.org/wiki/Billboard_(magazine)"
 
-	languageCode := scraping.GetLanguageCode(startingWikipageTrial)
-
+	// languageCode := scraping.GetLanguageCode(startingWikipageTrial)
+	node := scraping.ScrapeToNode(startingWikipageTrial)
 	startTime := time.Now()
-	path := getPath.SearchIDS(startingWikipageTrial, targetPage, ctx, languageCode, 6)
-	if path != nil {
-		fmt.Println("The target page is found!")
-		getPath.PrintPath(path)
-	} else {
-		fmt.Println("The target page is not found!")
-	}
+	entities.PrintTree(node, 0)
+
+	// wg.Add(6)
+	// go func() {
+	// 	scraping.GetWikiLinks(ctx, startingWikipageTrial, languageCode, &wg, &childLinks)
+	// 	wg.Done()
+	// }()
+	// wg.Wait()
+
+	// mu.Lock()
+	// for _, link := range childLinks {
+	// 	fmt.Println(link)
+	// }
+	// mu.Unlock()
+
+	// path := getPath.SearchIDS(startingWikipageTrial, targetPage, ctx, languageCode, 6)
+	// if path != nil {
+	// 	fmt.Println("The target page is found!")
+	// 	getPath.PrintPath(path)
+	// } else {
+	// 	fmt.Println("The target page is not found!")
+	// }
 	endTime := time.Now()
 	fmt.Println("Duration:", endTime.Sub(startTime))
 
