@@ -1,6 +1,7 @@
 package scraping
 
 import (
+	"sync"
 	"regexp"
 	"strings"
 
@@ -9,37 +10,57 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-func ScrapeToNode (url string) *entities.Node {
-	c := colly.NewCollector(
-		colly.AllowedDomains("en.wikipedia.org"),
-	)
+func ScrapeToNode(node *entities.Node, depth int) {
+    c := colly.NewCollector(
+        colly.AllowedDomains("en.wikipedia.org"),
+    )
 
-	node := &entities.Node{
-		URL:     url,
-		Parent:  nil,
-		Children: []*entities.Node{},
-		Depth:   0,
-	}
+	wg := sync.WaitGroup{}
 
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
+    // Create a buffered channel to communicate between goroutines and the main routine
+    childNodeChannel := make(chan *entities.Node, 1000000) // Use a buffer size based on the expected number of child nodes
 
-		if isWikipediaArticle(link) {
-			childNode := &entities.Node{
-				URL:     "https://en.wikipedia.org" + link,
-				Parent:  nil, 
-				Children: []*entities.Node{},
-				Depth:   0, 
-			}
-			node.AddChild(childNode)
-		}
-	})
-	c.OnRequest(func(r *colly.Request) {})
-	c.Visit(node.URL)
-	c.Wait()
+    // Define a function to process each HTML element concurrently
+    processElement := func(e *colly.HTMLElement) {
+        defer wg.Done()
+        link := e.Attr("href")
 
-	return node
+        if isWikipediaArticle(link) && ("https://en.wikipedia.org" + link) != node.URL {
+            childNode := &entities.Node{
+                URL:      "https://en.wikipedia.org" + link,
+                Parent:   node,
+                Children: []*entities.Node{},
+                Depth:    node.Depth + 1,
+            }
+            // Send the processed child node to the channel
+            childNodeChannel <- childNode
+        }
+    }
+
+    // Set up the parallel processing for each HTML element
+    c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+        wg.Add(1)
+        go processElement(e) // Run processing in a goroutine
+    })
+
+    // Start a separate goroutine to receive processed child nodes and add them to the parent node
+    go func() {
+        for childNode := range childNodeChannel {
+            node.AddChild(childNode)
+        }
+    }()
+
+    // Visit the initial URL
+    c.Visit(node.URL)
+
+    // Wait for the collector to finish
+    c.Wait()
+	wg.Wait()
+
+    // Close the channel after all processing is complete
+    close(childNodeChannel)
 }
+
 
 func isWikipediaArticle(url string) bool {
     pattern := `^\/wiki\/[^:#]+$`
