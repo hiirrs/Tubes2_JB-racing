@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"logic/internal/entities"
-	"logic/internal/tools"
+	scraping "logic/internal/tools"
 	// "sync"
 	// "sync/atomic"
 )
 
-func IDS(rootURL string, targetURL string, maxDepth int) *entities.Node {
+func IDS(rootURL string, targetURL string, maxDepth int) (*entities.Node, int) {
 	if rootURL == targetURL {
-		return &entities.Node{URL: rootURL}
+		return &entities.Node{URL: rootURL}, 1
 	}
 
 	root := &entities.Node{
@@ -21,15 +21,19 @@ func IDS(rootURL string, targetURL string, maxDepth int) *entities.Node {
 		Depth:    0,
 	}
 
+	visitCount := 0
+
 	var found *entities.Node
+	var temp int
 	for iteration := 1; iteration <= maxDepth && found == nil; iteration++ {
-		found = depthLimitedSearch(root, targetURL, iteration)
+		found, temp = depthLimitedSearch(root, targetURL, iteration)
+		visitCount += temp
 	}
 
-	return found
+	return found, visitCount
 }
 
-func depthLimitedSearch(root *entities.Node, targetURL string, depth int) *entities.Node {
+func depthLimitedSearch(root *entities.Node, targetURL string, depth int) (*entities.Node, int) {
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -55,7 +59,7 @@ func depthLimitedSearch(root *entities.Node, targetURL string, depth int) *entit
 					if child.URL == targetURL {
 						fmt.Println("Target found:", child.URL)
 						cancel()
-						return child
+						return child, len(visited)
 					}
 				}
 			}
@@ -68,8 +72,34 @@ func depthLimitedSearch(root *entities.Node, targetURL string, depth int) *entit
 					stack = append(stack, child)
 				}
 			}
-		} 
+		}
 	}
 
-	return nil
+	return nil, len(visited)
+}
+
+func Backtrack(node *entities.Node, path []string) []string {
+	if node.Parent == nil {
+		// println("terakhir")
+		// println(node.URL)
+		path = append(path, node.URL)
+		return path
+	}
+	// println(node.URL)
+	path = append(path, node.URL)
+	// println(path)
+	nodes := node.Parent
+	return Backtrack(nodes, path)
+}
+
+func ReverseArray(arr []string) []string {
+	left := 0
+	right := len(arr) - 1
+
+	for left < right {
+		arr[left], arr[right] = arr[right], arr[left]
+		left++
+		right--
+	}
+	return arr
 }

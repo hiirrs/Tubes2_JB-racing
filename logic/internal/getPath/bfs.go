@@ -2,7 +2,6 @@ package getPath
 
 import (
 	"context"
-	// "fmt"
 	"sync"
 	"sync/atomic"
 
@@ -39,14 +38,11 @@ func BFS(rootURL string, targetURL string, visited map[string]bool) *entities.No
 	visited[root.URL] = true
 
 	concurrency := len(root.Children)
-	if concurrency > 500 {
-		concurrency = 500
+	if concurrency > 1500 {
+		concurrency = 1500
 	}
 
 	for len(queue) > 0 && atomic.LoadInt32(&foundFlag) == 0 {
-		if len(queue) < concurrency {
-			concurrency = len(queue)
-		}
 
 		for i := 0; i < concurrency; i++ {
 			wg.Add(1)
@@ -54,8 +50,6 @@ func BFS(rootURL string, targetURL string, visited map[string]bool) *entities.No
 				defer wg.Done()
 				mutex.Lock()
 				currentNode := queue[i]
-				// fmt.Println("Scraping node:", currentNode.URL)
-				// fmt.Println("Visited nodes:", len(visited))
 				mutex.Unlock()
 
 				if visited[currentNode.URL] {
@@ -85,6 +79,13 @@ func BFS(rootURL string, targetURL string, visited map[string]bool) *entities.No
 		}
 
 		wg.Wait()
+		if concurrency < 1000 {
+			if len(queue) < 1000 {
+				concurrency = len(queue)
+			} else {
+				concurrency = 1000
+			}
+		}
 		queue = queue[concurrency:] // Update queue outside the goroutines
 	}
 

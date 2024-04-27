@@ -39,12 +39,13 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 	algorithm := request.Algorithm
 
 	maxDepth := 5
-	root := &entities.Node{
-		URL:      startPage,
-		Children: []*entities.Node{},
-		Depth:    0,
-	}
+	// root := &entities.Node{
+	// 	URL:      startPage,
+	// 	Children: []*entities.Node{},
+	// 	Depth:    0,
+	// }
 
+	var count int
 	var endNode *entities.Node
 	var path []string
 	var duration time.Duration
@@ -65,11 +66,13 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 			reverse := getPath.Backtrack(endNode, reverse)
 			path = getPath.ReverseArray(reverse)
 		}
+		count = len(visited)
+
 	} else if algorithm == "ids" {
 		var reverse []string
 		startTime := time.Now()
 
-		endNode = getPath.IDS(root, targetPage, maxDepth, visited)
+		endNode, count = getPath.IDS(startPage, targetPage, maxDepth)
 
 		endTime := time.Now()
 		duration = time.Duration((endTime.Sub(startTime)).Milliseconds())
@@ -89,7 +92,7 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 			Found:    true,
 			Duration: duration,
 			Degree:   endNode.Depth,
-			Count:    len(visited),
+			Count:    count,
 			Path:     strings.Join(path, " -> "),
 		}
 	} else {
@@ -129,58 +132,3 @@ func main() {
 	http.HandleFunc("/api/race", addCORSHeaders(handleRace))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
-
-// package main
-
-// import (
-// 	"context"
-// 	"encoding/json"
-// 	"fmt"
-// 	"net/http"
-// 	"time"
-
-// 	"logic/internal/getPath"
-// 	scraping "logic/internal/tools"
-// )
-
-// func main() {
-// 	http.HandleFunc("/calculate", calculateHandler)
-// 	fmt.Println("Server is running on port 8080...")
-// 	http.ListenAndServe(":8080", nil)
-// }
-
-// func calculateHandler(w http.ResponseWriter, r *http.Request) {
-// 	var requestData struct {
-// 		StartInput  string `json:"startInput"`
-// 		FinishInput string `json:"finishInput"`
-// 	}
-
-// 	err := json.NewDecoder(r.Body).Decode(&requestData)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	start := "https://en.wikipedia.org/wiki/" + requestData.StartInput
-// 	finish := "https://en.wikipedia.org/wiki/" + requestData.FinishInput
-
-// 	ctx, cancel := context.WithCancel(context.Background())
-// 	defer cancel()
-
-// 	languageCode := scraping.GetLanguageCode(startingWikipage)
-
-// 	startTime := time.Now()
-// 	path := getPath.SearchIDS(startingWikipage, finishWikipage, ctx, languageCode, 5)
-// 	endTime := time.Now()
-
-// 	responseData := struct {
-// 		Path     []string `json:"path"`
-// 		Duration string   `json:"duration"`
-// 	}{
-// 		Path:     path,
-// 		Duration: endTime.Sub(startTime).String(),
-// 	}
-
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(responseData)
-// }
