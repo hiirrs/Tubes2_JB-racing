@@ -25,7 +25,7 @@ func ScrapeToNode(node *entities.Node, depth int) {
 		defer wg.Done()
 		link := e.Attr("href")
 
-		if isWikipediaArticle(link) && ("https://en.wikipedia.org"+link) != node.URL {
+		if IsWikipediaArticle(link) && ("https://en.wikipedia.org"+link) != node.URL {
 			childNode := &entities.Node{
 				URL:      "https://en.wikipedia.org" + link,
 				Parent:   node,

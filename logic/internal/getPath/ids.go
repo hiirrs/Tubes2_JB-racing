@@ -1,9 +1,10 @@
 package getPath
 
 import (
-	"github.com/gocolly/colly/v2"
 	"logic/internal/entities"
 	scraping "logic/internal/tools"
+
+	"github.com/gocolly/colly/v2"
 )
 
 func ScrapeToNodeIDS(root *entities.Node) {
@@ -24,9 +25,9 @@ func ScrapeToNodeIDS(root *entities.Node) {
 	c.Wait()
 }
 
-func IDS(root *entities.Node, target string, maxDepth int) []*entities.Node {
+func IDS(root *entities.Node, target string, maxDepth int, count int) []*entities.Node {
 	for depth := 0; depth <= maxDepth; depth++ {
-		result, found := DLS(root, target, depth)
+		result, found := DLS(root, target, depth, count)
 		if found {
 			return result
 		}
@@ -34,12 +35,12 @@ func IDS(root *entities.Node, target string, maxDepth int) []*entities.Node {
 	return nil
 }
 
-func DLS(root *entities.Node, target string, depth int) ([]*entities.Node, bool) {
+func DLS(root *entities.Node, target string, depth int, count int) ([]*entities.Node, bool) {
 	visited := make(map[string]bool)
-	return DLSR(root, target, depth, visited)
+	return DLSR(root, target, depth, visited, count)
 }
 
-func DLSR(root *entities.Node, target string, depth int, visited map[string]bool) ([]*entities.Node, bool) {
+func DLSR(root *entities.Node, target string, depth int, visited map[string]bool, count int) ([]*entities.Node, bool) {
 	// fmt.Printf("Visiting node %s at depth %d\n", root.URL, root.Depth)
 	// println(depth)
 	scraping.ScrapeToNode(root, root.Depth)
@@ -53,20 +54,25 @@ func DLSR(root *entities.Node, target string, depth int, visited map[string]bool
 	if root.Depth >= depth {
 		return nil, false
 	}
-	visited[root.URL] = true
-	println(root.URL)
-	println(len(root.Children))
-	for _, link := range root.Children {
-		if _, ok := visited[link.URL]; !ok {
-			visited[link.URL] = true
-			// println("link to inspect")
-			// println(link.URL)
-			result, found := DLSR(link, target, depth-1, visited)
-			if found {
-				return result, found // Return if the target is found
+	if !visited[root.URL] {
+		count++
+		visited[root.URL] = true
+		println(len(visited))
+		println(root.URL)
+		println(len(root.Children))
+		for _, link := range root.Children {
+			if _, ok := visited[link.URL]; !ok {
+				visited[link.URL] = true
+				// println("link to inspect")
+				// println(link.URL)
+				result, found := DLSR(link, target, depth-1, visited, count)
+				if found {
+					return result, found
+				}
 			}
 		}
 	}
+
 	return nil, false
 }
 

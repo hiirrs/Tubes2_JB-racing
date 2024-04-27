@@ -24,6 +24,7 @@ type RaceResponse struct {
 }
 
 func handleRace(w http.ResponseWriter, r *http.Request) {
+	isLoading = true
 	decoder := json.NewDecoder(r.Body)
 	var request RaceRequest
 	if err := decoder.Decode(&request); err != nil {
@@ -46,6 +47,7 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 	var result []*entities.Node
 	var result_path []string
 	var duration time.Duration
+	count := 0
 
 	if algorithm == "bfs" {
 		// result = getPath.BFS(root, targetPage)
@@ -53,12 +55,15 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 	} else if algorithm == "ids" {
 		var paths []string
 		startTime := time.Now()
-		result = getPath.IDS(root, targetPage, maxDepth)
+		result = getPath.IDS(root, targetPage, maxDepth, count)
 		endTime := time.Now()
+		println(count)
 		duration = time.Duration((endTime.Sub(startTime)).Milliseconds())
 		if result != nil {
 			paths = getPath.Backtrack(result, paths)
 			result_path = getPath.ReverseArray(paths)
+			println(len(paths))
+			println(len(result_path))
 		}
 
 	}
@@ -80,6 +85,7 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 			ResultPath: []string{}, // Ensure resultPath is an empty array, not nil
 		}
 	}
+	isLoading = false
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
@@ -99,6 +105,8 @@ func addCORSHeaders(handler http.HandlerFunc) http.HandlerFunc {
 		handler(w, r)
 	}
 }
+
+var isLoading bool
 
 func main() {
 	http.HandleFunc("/api/race", addCORSHeaders(handleRace))

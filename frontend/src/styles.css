@@ -1,10 +1,170 @@
 html, body {
-    height: 900px;
+    height: 2000px;
     width: 100vw;
     margin: 0;
+    background-repeat: no-repeat;
     background: linear-gradient(to bottom, #d9d9d9, #847c77);
 }
 
+.loading-box {
+    position: fixed;
+    top: 50%;
+    width: 100vw;
+    height: 100vh;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 20px;
+    z-index: 9999; 
+}
+
+.loading-text {
+    font-size: 18px;
+    color: #333;
+    top: 50%;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: monospace;
+    font-size: xx-large;
+    font-weight: bolder;
+}
+
+.loading-animation {
+    width: 300px;
+    height: 300px; 
+    top: 300px;
+    background-image: url('./assets/loading.gif'); 
+    background-size: cover;
+    background-repeat: no-repeat; 
+    margin: 0 auto; 
+}
+
+.page {
+    height: 100vh; 
+    background-repeat: no-repeat;
+    background-position: center;
+    background: linear-gradient(to bottom, #d9d9d9, #847c77)
+}
+
+.background-box {
+    position: absolute;
+    top: 320px;
+    left: 0%;
+    width: 710px; 
+    height: 500px;
+    background-color: #f2f2f2; 
+    background-image: url('./assets/race/result.jpg');
+    background-size: cover;
+    border: 10px solid #000000;
+    border-radius: 5%;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+
+  }
+
+.result {
+    position: absolute;
+    background-color: #f0f0f0;
+    width: 730px;
+    left: 0%;
+    top: 3px;
+    font-family: monospace;
+    font-weight:bolder;
+    font-size:xx-large;
+    text-align: center;
+}
+
+.output-table {
+    position: absolute;
+    top: 60px;
+    left: 0%;
+    align-items: center;
+    width: 730px;
+    border: 1px solid #000000;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+ 
+.output-table th {
+    width: 500px;
+    border: 3px solid #ccc;
+    padding: 8px; 
+    background-color: #2a1d1d;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: xx-large;
+    color: #fff;
+}
+  
+.output-table td {
+    max-width: 700px;
+    border: 1px solid #ccc;
+    padding: 8px; 
+    background-color: #ffffff;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: xx-large;
+    text-align: center;
+}
+
+.output-path {
+    max-width: 900px;
+    background-color: #f0f0f0;
+    position: absolute;
+    top: 400px;
+    left: 0.5%;
+    width: 720px;
+    border: 1px solid #000000;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: xx-large;
+    overflow-x: auto;
+}
+
+.output-path th {
+    max-width: 900px;
+    width: 800px;
+    border: 3px solid #ccc;
+    padding: 8px; 
+    background-color: transparent #2a1d1d;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: xx-large;
+    color: #000000;
+}
+
+.output-path td {
+    border: 1px solid #ccc;
+    padding: 8px; 
+    background-color: #ffffff;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: xx-large;
+    text-align: center;
+}
+
+
+.output-duration {
+    align-self: center;
+    position: absolute;
+    top: 300px;
+    left: 15%;
+    width: 500px; 
+    height: 100px; 
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px; 
+    overflow: auto; 
+    background-color: #f9f9f9;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: xx-large;
+  }
+  
 .error-warning {
     position: fixed;
     top: 0;
@@ -15,29 +175,30 @@ html, body {
     padding: 10px 20px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    /* border-bottom: 2px solid #ff0000; */
     width: 80%;
     text-align: center;
-    z-index: 9999; /* Ensure it's above other elements */
-    font-family: 'Roboto', sans-serif;
+    z-index: 9999;
+    font-family:monospace;
+    font-size:x-large;
     transition: top 0.1s ease;
+    
 }
 
-.result-container {
-    position: absolute;
-    top: 300px;
-    width: 500px;
-    left: 41%;
-    margin-top: 20px; /* Add margin to separate it from other content */
-    border-radius: 5px; /* Add rounded corners */
-    background-color: transparent;
-    /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
-    z-index: 1000;
-    font-family: monospace;
-    font-weight: bold;
-    font-size: xx-large;
-} 
 
+.result-box {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .result-box h2 {
+    margin-top: 0;
+  }
+  
+  .result-box p {
+    margin: 0;
+  }
 
 .background-container {
     min-height: 100%;
