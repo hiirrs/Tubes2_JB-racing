@@ -10,7 +10,7 @@ import detail1 from '../assets/race/detail1.png';
 import detail2 from '../assets/race/detail2.png';
 import detail3 from '../assets/race/detail3.png';
 import ready from '../assets/race/question.png';
-import loadingSpinner from '../assets/loading.gif'
+import loadingSpinner from '../assets/race/loading.gif'
 
 
 function Race() {

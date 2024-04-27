@@ -34,7 +34,7 @@ html, body {
     width: 300px;
     height: 300px; 
     top: 300px;
-    background-image: url('./assets/loading.gif'); 
+    background-image: url('./assets/race/loading.gif'); 
     background-size: cover;
     background-repeat: no-repeat; 
     margin: 0 auto; 

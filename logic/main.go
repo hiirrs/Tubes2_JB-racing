@@ -26,7 +26,7 @@ type RaceResult struct {
 }
 
 func handleRace(w http.ResponseWriter, r *http.Request) {
-	isLoading = true
+	// isLoading = true
 	decoder := json.NewDecoder(r.Body)
 	var request RaceRequest
 	if err := decoder.Decode(&request); err != nil {
@@ -102,7 +102,7 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 			Path:     "Path Not Found",
 		}
 	}
-	isLoading = false
+	// isLoading = false
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result)
@@ -123,7 +123,7 @@ func addCORSHeaders(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-var isLoading bool
+// var isLoading bool
 
 func main() {
 	http.HandleFunc("/api/race", addCORSHeaders(handleRace))

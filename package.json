@@ -3,5 +3,10 @@
     "create-react-app": "^5.0.1",
     "react": "^18.2.0",
     "react-router-dom": "^6.23.0"
+  },
+
+  "scripts": {
+    "dev": "concurrently \"cd frontend && npm run start\" \"cd logic && go run main.go\""
   }
+  
 }
