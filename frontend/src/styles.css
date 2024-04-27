@@ -1,5 +1,6 @@
 html, body {
-    height: 2000px;
+    height: 900px;
+    width: 100vw;
     margin: 0;
     background: linear-gradient(to bottom, #d9d9d9, #847c77);
 }
@@ -20,7 +21,23 @@ html, body {
     z-index: 9999; /* Ensure it's above other elements */
     font-family: 'Roboto', sans-serif;
     transition: top 0.1s ease;
-  }
+}
+
+.result-container {
+    position: absolute;
+    top: 300px;
+    width: 500px;
+    left: 41%;
+    margin-top: 20px; /* Add margin to separate it from other content */
+    border-radius: 5px; /* Add rounded corners */
+    background-color: transparent;
+    /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
+    z-index: 1000;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: xx-large;
+} 
+
 
 .background-container {
     min-height: 100%;
@@ -158,15 +175,15 @@ html, body {
     margin-top: 20px;
 }
 
-.centered_box {
+.centered-result {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 50px;
+    left: 30%;
     transform: translate(-50%, -50%);
     display: flex;
     justify-content: center;
     margin-top: 20px;
-    
+    margin-right: 40px;
 }
 
 .input-container {

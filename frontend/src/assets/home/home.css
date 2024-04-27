@@ -1,14 +1,14 @@
 .precise-welcome {
     position: absolute;
     height: 200px;
-    top: 100px;
+    top: 70px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .know-race{
     position: absolute;
-    top: 500px;
+    top: 450px;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;

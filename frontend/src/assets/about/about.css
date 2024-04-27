@@ -1,33 +1,62 @@
+.precise-meet {
+    position: absolute;
+    background-image: url('./meet.png');
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 .button_biilly {
+    position: relative;
     background-color: transparent;
     background-image: url('./biilyy.png');
     background-size: cover; 
     border: transparent;
     width: 210px;
     height: 250px;
-    flex: 0 0 calc(33.33% - 20px); /* Set the width of each button */
     margin: 10px;
+    top: 250px
 }
 
 .bout-container {
+    position: relative;
+    justify-content: center;
+    top: 40px;
     height: 10px;
     display: flex;
-    flex-wrap: wrap; /* Allow the buttons to wrap to a new line */
+    flex-wrap: wrap;
+    /* width: 100vw; 
+    height: 100vh;  */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;  /* Allow the buttons to wrap to a new line */
   }
+
+.bout-centered {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
 
 .button_biilly:hover {
     transform: scale(1.1);
 }
 
 .button_hira {
+    position: relative;
     background-color: transparent;
     background-image: url('./hira.png');
     background-size: cover; 
     border: transparent;
-    width: 50px;
-    height: auto;
-    flex: 0 0 calc(33.33% - 20px); /* Set the width of each button */
+    width: 210px;
+    height: 250px;
     margin: 10px;
+    top: 250px
 }
 
 .button_hira:hover {
@@ -35,14 +64,15 @@
 }
 
 .button_shulhy {
+    position: relative;
     background-color: transparent;
     background-image: url('./shully.png');
     background-size: cover; 
     border: transparent;
     width: 210px;
     height: 250px;
-    flex: 0 0 calc(33.33% - 20px); /* Set the width of each button */
     margin: 10px;
+    top: 250px
 }
 
 .button_shulhy:hover {

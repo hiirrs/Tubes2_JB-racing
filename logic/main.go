@@ -7,6 +7,7 @@ import (
 	"logic/internal/entities"
 	"logic/internal/getPath"
 	"net/http"
+	"time"
 )
 
 type RaceRequest struct {
@@ -16,8 +17,10 @@ type RaceRequest struct {
 }
 
 type RaceResponse struct {
-	Status  string `json:"status"`
-	Message string `json:"message"`
+	Status     string        `json:"status"`
+	Message    string        `json:"message"`
+	ResultPath []string      `json:"resultPath,omitempty"`
+	Duration   time.Duration `json:"duration,omitempty"`
 }
 
 func handleRace(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +33,7 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 
 	startPage := request.StartUrl
 	targetPage := request.FinishUrl
+	algorithm := request.Algorithm
 	println(startPage)
 	println(targetPage)
 
@@ -39,20 +43,41 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 		Children: []*entities.Node{},
 		Depth:    0,
 	}
-	result := getPath.SearchIDSC(root, targetPage, maxDepth)
+	var result []*entities.Node
+	var result_path []string
+	var duration time.Duration
+
+	if algorithm == "bfs" {
+		// result = getPath.BFS(root, targetPage)
+
+	} else if algorithm == "ids" {
+		var paths []string
+		startTime := time.Now()
+		result = getPath.IDS(root, targetPage, maxDepth)
+		endTime := time.Now()
+		duration = time.Duration((endTime.Sub(startTime)).Milliseconds())
+		if result != nil {
+			paths = getPath.Backtrack(result, paths)
+			result_path = getPath.ReverseArray(paths)
+		}
+
+	}
 
 	var response RaceResponse
 	if result != nil {
 		fmt.Println("The target page is found!")
 		response = RaceResponse{
-			Status:  "success",
-			Message: "Race calculation completed successfully",
+			Status:     "success",
+			Message:    "Race calculation completed successfully",
+			ResultPath: result_path,
+			Duration:   duration,
 		}
 	} else {
 		fmt.Println("The target page is not found!")
 		response = RaceResponse{
-			Status:  "error",
-			Message: "Failed to find target page",
+			Status:     "error",
+			Message:    "Failed to find target page",
+			ResultPath: []string{}, // Ensure resultPath is an empty array, not nil
 		}
 	}
 
@@ -67,7 +92,6 @@ func addCORSHeaders(handler http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
-		// If it's an OPTIONS request, return just the headers
 		if r.Method == "OPTIONS" {
 			return
 		}

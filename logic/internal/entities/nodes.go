@@ -3,13 +3,25 @@ package entities
 import "fmt"
 
 type Node struct {
-	URL     string
-	Parent  *Node
+	URL      string
+	Parent   *Node
 	Children []*Node
-	Depth int
+	Depth    int
 }
 
 func (n *Node) AddChild(child *Node) {
+	child.Parent = n
+	child.Depth = n.Depth + 1
+	n.Children = append(n.Children, child)
+}
+
+func (n *Node) AddChildIDS(child *Node) {
+	for _, existingChild := range n.Children {
+		if existingChild.URL == child.URL {
+			return
+		}
+	}
+
 	child.Parent = n
 	child.Depth = n.Depth + 1
 	n.Children = append(n.Children, child)

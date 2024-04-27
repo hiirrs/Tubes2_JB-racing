@@ -20,10 +20,11 @@ function Race() {
   const [startSuggestionsURLs, setStartSuggestionsURLs] = useState([]);
   const [finishSuggestionsURLs, setFinishSuggestionsURLs] = useState([]);
 
-  const [error, setError] = useState(null); // Define error state
-
-
+  const [error, setError] = useState(null);
   const [algorithm, setAlgorithm] = useState(null);
+  const [result, setResult] = useState(null);
+  const [resultPath, setResultPath] = useState([]);
+  const [duration, setDuration] = useState(null);
 
   const handleChange1 = (event) => {
     setStartInput(event.target.value);
@@ -36,18 +37,17 @@ function Race() {
   };
 
   const handleButtonClick = (algorithm) => {
-    setAlgorithm(algorithm); // Set the chosen algorithm
+    setAlgorithm(algorithm);
+    console.log(algorithm)
   };
 
   const handleGoClick = () => {
-    // Check if startInput and finishInput are not empty
     if (startInput.trim() === '' || finishInput.trim() === '') {
         console.warn('Please enter both start and finish points.');
         setError('Please enter both start and finish points.');
         return;
     }
 
-    // Fetch start URL
     const startUrlPromise = fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&limit=1&format=json&search=${startInput}&origin=*`)
         .then(response => {
             if (!response.ok) {
@@ -63,7 +63,6 @@ function Race() {
             }
         });
 
-    // Fetch finish URL
     const finishUrlPromise = fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&limit=1&format=json&search=${finishInput}&origin=*`)
         .then(response => {
             if (!response.ok) {
@@ -79,7 +78,6 @@ function Race() {
             }
         });
 
-    // Wait for both promises to resolve
     Promise.all([startUrlPromise, finishUrlPromise])
         .then(([startUrl, finishUrl]) => {
             // Make the POST request to the Go backend
@@ -98,53 +96,26 @@ function Race() {
                 return response.json();
             })
             .then(data => {
-                // Handle the response data
                 console.log('Response from backend:', data);
-                // Update UI or do other actions based on the response
+                setResult(data.result);
+                setResultPath(data.result_path || []);
+                setDuration(data.duration);
+                setError(null);
+                return data;
+                
             })
             .catch(error => {
                 console.error('Error processing race:', error);
                 setError('Error processing race: ' + error.message);
-                // Handle errors, show error message, etc.
             });
         })
         .catch(error => {
             console.error('Error fetching URLs:', error);
             setError('Error processing race: ' + error.message);
-            
-            // Handle errors, show error message, etc.
         });
+    
 };
 
-//   const handleGoClick = () => {
-//     // Construct start URL and finish URL
-//     const startUrl = `https://en.wikipedia.org/wiki/${startInput}`;
-//     const finishUrl = `https://en.wikipedia.org/wiki/${finishInput}`;
-
-//     // Make the POST request to the Go backend
-//     fetch('http://localhost:8080/api/race', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ startUrl, finishUrl, algorithm }),
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         // Handle the response data
-//         console.log('Response from backend:', data);
-//         // Update UI or do other actions based on the response
-//     })
-//     .catch(error => {
-//         console.error('Error processing race:', error);
-//         // Handle errors, show error message, etc.
-//     });
-// };
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -207,6 +178,8 @@ function Race() {
     }
   };
 
+  
+
   return (
       <div>
         <div className="container">
@@ -253,10 +226,13 @@ function Race() {
               </div>
               <div>
                 <button className="button_go" onClick={handleGoClick}></button> 
-                {error && <div className="error-warning">{error}</div>}         
+                {error && <div className="error-warning">{error}</div>}       
               </div>
-              <div>
-                
+              <div className="result-container">
+                {/* <div className="centered-result"> */}
+                  <p>Duration: {duration} ms</p>
+                  {/* <p>Result Path: {resultPath.join(' -> ')}</p> */}
+                {/* </div> */}
               </div>
               <div>
                 {/* Result: {result} */}
