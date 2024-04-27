@@ -2,15 +2,15 @@ package getPath
 
 import (
 	"context"
-	"fmt"
+	// "fmt"
 	"sync"
 	"sync/atomic"
 
 	"logic/internal/entities"
-	"logic/internal/tools"
+	scraping "logic/internal/tools"
 )
 
-func BFS(rootURL string, targetURL string) *entities.Node {
+func BFS(rootURL string, targetURL string, visited map[string]bool) *entities.Node {
 	if rootURL == targetURL {
 		return &entities.Node{URL: rootURL}
 	}
@@ -19,7 +19,7 @@ func BFS(rootURL string, targetURL string) *entities.Node {
 	defer cancel()
 
 	queue := []*entities.Node{}
-	visited := make(map[string]bool)
+	// visited := make(map[string]bool)
 	var wg sync.WaitGroup
 	var foundFlag int32 = 0 // Atomic flag to ensure only one goroutine sends the result
 
@@ -33,7 +33,7 @@ func BFS(rootURL string, targetURL string) *entities.Node {
 		Depth:    0,
 	}
 
-	fmt.Println("Scraping root node:", rootURL)
+	// fmt.Println("Scraping root node:", rootURL)
 	scraping.ScrapeToNode(root, root.Depth)
 	queue = append(queue, root.Children...)
 	visited[root.URL] = true
@@ -54,8 +54,8 @@ func BFS(rootURL string, targetURL string) *entities.Node {
 				defer wg.Done()
 				mutex.Lock()
 				currentNode := queue[i]
-				fmt.Println("Scraping node:", currentNode.URL)
-				fmt.Println("Visited nodes:", len(visited))
+				// fmt.Println("Scraping node:", currentNode.URL)
+				// fmt.Println("Visited nodes:", len(visited))
 				mutex.Unlock()
 
 				if visited[currentNode.URL] {
@@ -63,7 +63,7 @@ func BFS(rootURL string, targetURL string) *entities.Node {
 				}
 
 				if currentNode.URL == targetURL && atomic.CompareAndSwapInt32(&foundFlag, 0, 1) {
-					fmt.Println("Target found:", currentNode.URL)
+					// fmt.Println("Target found:", currentNode.URL)
 					resultCh <- currentNode
 					cancel() // Cancel all goroutines
 					return

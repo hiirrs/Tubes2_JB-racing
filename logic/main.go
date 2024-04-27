@@ -7,6 +7,7 @@ import (
 	"logic/internal/entities"
 	"logic/internal/getPath"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -16,11 +17,12 @@ type RaceRequest struct {
 	Algorithm string `json:"algorithm"`
 }
 
-type RaceResponse struct {
-	Status     string        `json:"status"`
-	Message    string        `json:"message"`
-	ResultPath []string      `json:"resultPath,omitempty"`
-	Duration   time.Duration `json:"duration,omitempty"`
+type RaceResult struct {
+	Found    bool          `json:"found"`
+	Duration time.Duration `json:"duration"`
+	Degree   int           `json:"degree"`
+	Count    int           `json:"count"`
+	Path     string        `json:"path"`
 }
 
 func handleRace(w http.ResponseWriter, r *http.Request) {
@@ -35,60 +37,75 @@ func handleRace(w http.ResponseWriter, r *http.Request) {
 	startPage := request.StartUrl
 	targetPage := request.FinishUrl
 	algorithm := request.Algorithm
-	println(startPage)
-	println(targetPage)
 
-	maxDepth := 7
+	maxDepth := 5
 	root := &entities.Node{
 		URL:      startPage,
 		Children: []*entities.Node{},
 		Depth:    0,
 	}
-	var result []*entities.Node
-	var result_path []string
+
+	var endNode *entities.Node
+	var path []string
 	var duration time.Duration
-	count := 0
+
+	visited := make(map[string]bool)
 
 	if algorithm == "bfs" {
-		// result = getPath.BFS(root, targetPage)
-
-	} else if algorithm == "ids" {
-		var paths []string
+		var reverse []string
 		startTime := time.Now()
-		result = getPath.IDS(root, targetPage, maxDepth, count)
+
+		endNode = getPath.BFS(startPage, targetPage, visited)
+
 		endTime := time.Now()
-		println(count)
 		duration = time.Duration((endTime.Sub(startTime)).Milliseconds())
-		if result != nil {
-			paths = getPath.Backtrack(result, paths)
-			result_path = getPath.ReverseArray(paths)
-			println(len(paths))
-			println(len(result_path))
+		// timeProcess = float32(duration.Milliseconds())
+
+		if endNode != nil {
+			reverse := getPath.Backtrack(endNode, reverse)
+			path = getPath.ReverseArray(reverse)
+		}
+	} else if algorithm == "ids" {
+		var reverse []string
+		startTime := time.Now()
+
+		endNode = getPath.IDS(root, targetPage, maxDepth, visited)
+
+		endTime := time.Now()
+		duration = time.Duration((endTime.Sub(startTime)).Milliseconds())
+		// timeProcess = float32(duration.Milliseconds())
+
+		if endNode != nil {
+			reverse := getPath.Backtrack(endNode, reverse)
+			path = getPath.ReverseArray(reverse)
 		}
 
 	}
 
-	var response RaceResponse
-	if result != nil {
+	var result RaceResult
+	if endNode != nil {
 		fmt.Println("The target page is found!")
-		response = RaceResponse{
-			Status:     "success",
-			Message:    "Race calculation completed successfully",
-			ResultPath: result_path,
-			Duration:   duration,
+		result = RaceResult{
+			Found:    true,
+			Duration: duration,
+			Degree:   endNode.Depth,
+			Count:    len(visited),
+			Path:     strings.Join(path, " -> "),
 		}
 	} else {
 		fmt.Println("The target page is not found!")
-		response = RaceResponse{
-			Status:     "error",
-			Message:    "Failed to find target page",
-			ResultPath: []string{}, // Ensure resultPath is an empty array, not nil
+		result = RaceResult{
+			Found:    false,
+			Duration: 0.0,
+			Degree:   0,
+			Count:    0,
+			Path:     "Path Not Found",
 		}
 	}
 	isLoading = false
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(result)
 }
 
 // Middleware to add CORS headers

@@ -3,31 +3,30 @@ package getPath
 import (
 	"logic/internal/entities"
 	scraping "logic/internal/tools"
-
-	"github.com/gocolly/colly/v2"
+	// "github.com/gocolly/colly/v2"
 )
 
-func ScrapeToNodeIDS(root *entities.Node) {
-	c := colly.NewCollector(
-		colly.AllowedDomains("en.wikipedia.org"),
-	)
+// func ScrapeToNodeIDS(root *entities.Node) {
+// 	c := colly.NewCollector(
+// 		colly.AllowedDomains("en.wikipedia.org"),
+// 	)
 
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
+// 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+// 		link := e.Attr("href")
 
-		if scraping.IsWikipediaArticle(link) {
-			child := &entities.Node{URL: "https://en.wikipedia.org" + link}
-			root.AddChildIDS(child)
-		}
-	})
-	c.OnRequest(func(r *colly.Request) {})
-	c.Visit(root.URL)
-	c.Wait()
-}
+// 		if scraping.IsWikipediaArticle(link) {
+// 			child := &entities.Node{URL: "https://en.wikipedia.org" + link}
+// 			root.AddChildIDS(child)
+// 		}
+// 	})
+// 	c.OnRequest(func(r *colly.Request) {})
+// 	c.Visit(root.URL)
+// 	c.Wait()
+// }
 
-func IDS(root *entities.Node, target string, maxDepth int, count int) []*entities.Node {
+func IDS(root *entities.Node, target string, maxDepth int, visited map[string]bool) *entities.Node {
 	for depth := 0; depth <= maxDepth; depth++ {
-		result, found := DLS(root, target, depth, count)
+		result, found := DLS(root, target, depth, visited)
 		if found {
 			return result
 		}
@@ -35,18 +34,17 @@ func IDS(root *entities.Node, target string, maxDepth int, count int) []*entitie
 	return nil
 }
 
-func DLS(root *entities.Node, target string, depth int, count int) ([]*entities.Node, bool) {
-	visited := make(map[string]bool)
-	return DLSR(root, target, depth, visited, count)
+func DLS(root *entities.Node, target string, depth int, visited map[string]bool) (*entities.Node, bool) {
+	return DLSR(root, target, depth, visited)
 }
 
-func DLSR(root *entities.Node, target string, depth int, visited map[string]bool, count int) ([]*entities.Node, bool) {
+func DLSR(root *entities.Node, target string, depth int, visited map[string]bool) (*entities.Node, bool) {
 	// fmt.Printf("Visiting node %s at depth %d\n", root.URL, root.Depth)
 	// println(depth)
 	scraping.ScrapeToNode(root, root.Depth)
 	// printChildrenURLs(root)
 	if root.URL == target {
-		return []*entities.Node{root}, true
+		return root, true
 	}
 	if depth <= 0 {
 		return nil, false
@@ -55,39 +53,36 @@ func DLSR(root *entities.Node, target string, depth int, visited map[string]bool
 		return nil, false
 	}
 	if !visited[root.URL] {
-		count++
 		visited[root.URL] = true
-		println(len(visited))
-		println(root.URL)
-		println(len(root.Children))
+		// println(len(visited))
+		// println(root.URL)
+		// println(len(root.Children))
 		for _, link := range root.Children {
 			if _, ok := visited[link.URL]; !ok {
 				visited[link.URL] = true
 				// println("link to inspect")
 				// println(link.URL)
-				result, found := DLSR(link, target, depth-1, visited, count)
+				result, found := DLSR(link, target, depth-1, visited)
 				if found {
 					return result, found
 				}
 			}
 		}
 	}
-
 	return nil, false
 }
 
-func Backtrack(nodes []*entities.Node, path []string) []string {
-	node := nodes[0]
+func Backtrack(node *entities.Node, path []string) []string {
 	if node.Parent == nil {
-		println("terakhir")
-		println(node.URL)
+		// println("terakhir")
+		// println(node.URL)
 		path = append(path, node.URL)
 		return path
 	}
-	println(node.URL)
+	// println(node.URL)
 	path = append(path, node.URL)
-	println(path)
-	nodes[0] = node.Parent
+	// println(path)
+	nodes := node.Parent
 	return Backtrack(nodes, path)
 }
 

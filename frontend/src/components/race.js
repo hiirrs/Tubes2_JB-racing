@@ -240,7 +240,7 @@ function Race() {
               </div>
               {duration !== null && (
                 <div class="background-box">
-                  <p className='result'>RESULT: {found}</p>
+                  <p className='result'>RESULT: {found ? "Found" : "Not Found"}</p>
                   <div className="output-table">
                     <table>
                       <tr>
