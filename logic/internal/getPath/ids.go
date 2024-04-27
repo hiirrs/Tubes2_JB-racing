@@ -1,99 +1,75 @@
 package getPath
 
 import (
+	"context"
+	"fmt"
 	"logic/internal/entities"
-	scraping "logic/internal/tools"
-	// "github.com/gocolly/colly/v2"
+	"logic/internal/tools"
+	// "sync"
+	// "sync/atomic"
 )
 
-// func ScrapeToNodeIDS(root *entities.Node) {
-// 	c := colly.NewCollector(
-// 		colly.AllowedDomains("en.wikipedia.org"),
-// 	)
-
-// 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-// 		link := e.Attr("href")
-
-// 		if scraping.IsWikipediaArticle(link) {
-// 			child := &entities.Node{URL: "https://en.wikipedia.org" + link}
-// 			root.AddChildIDS(child)
-// 		}
-// 	})
-// 	c.OnRequest(func(r *colly.Request) {})
-// 	c.Visit(root.URL)
-// 	c.Wait()
-// }
-
-func IDS(root *entities.Node, target string, maxDepth int, visited map[string]bool) *entities.Node {
-	for depth := 0; depth <= maxDepth; depth++ {
-		result, found := DLS(root, target, depth, visited)
-		if found {
-			return result
-		}
+func IDS(rootURL string, targetURL string, maxDepth int) *entities.Node {
+	if rootURL == targetURL {
+		return &entities.Node{URL: rootURL}
 	}
-	return nil
+
+	root := &entities.Node{
+		URL:      rootURL,
+		Parent:   nil,
+		Children: []*entities.Node{},
+		Depth:    0,
+	}
+
+	var found *entities.Node
+	for iteration := 1; iteration <= maxDepth && found == nil; iteration++ {
+		found = depthLimitedSearch(root, targetURL, iteration)
+	}
+
+	return found
 }
 
-func DLS(root *entities.Node, target string, depth int, visited map[string]bool) (*entities.Node, bool) {
-	return DLSR(root, target, depth, visited)
-}
+func depthLimitedSearch(root *entities.Node, targetURL string, depth int) *entities.Node {
+	_, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-func DLSR(root *entities.Node, target string, depth int, visited map[string]bool) (*entities.Node, bool) {
-	// fmt.Printf("Visiting node %s at depth %d\n", root.URL, root.Depth)
-	// println(depth)
-	scraping.ScrapeToNode(root, root.Depth)
-	// printChildrenURLs(root)
-	if root.URL == target {
-		return root, true
-	}
-	if depth <= 0 {
-		return nil, false
-	}
-	if root.Depth >= depth {
-		return nil, false
-	}
-	if !visited[root.URL] {
-		visited[root.URL] = true
-		// println(len(visited))
-		// println(root.URL)
-		// println(len(root.Children))
-		for _, link := range root.Children {
-			if _, ok := visited[link.URL]; !ok {
-				visited[link.URL] = true
-				// println("link to inspect")
-				// println(link.URL)
-				result, found := DLSR(link, target, depth-1, visited)
-				if found {
-					return result, found
+	// var wg sync.WaitGroup
+	visited := make(map[string]bool)
+	stack := []*entities.Node{root}
+	visited[root.URL] = true
+
+	for len(stack) > 0 {
+		currentNode := stack[len(stack)-1]
+		stack = stack[:len(stack)-1] // Pop from stack
+
+		fmt.Println("Scraping node:", currentNode.URL)
+		fmt.Println("Depth:", currentNode.Depth)
+		fmt.Println("Visited nodes:", len(visited))
+
+		if currentNode.Depth == depth-1 {
+			fmt.Println("Check")
+			scraping.ScrapeToNode(currentNode, currentNode.Depth)
+			for _, child := range currentNode.Children {
+				if !visited[child.URL] {
+					visited[child.URL] = true
+					if child.URL == targetURL {
+						fmt.Println("Target found:", child.URL)
+						cancel()
+						return child
+					}
 				}
 			}
-		}
+		} else if currentNode.Depth < depth {
+			scraping.ScrapeToNode(currentNode, currentNode.Depth)
+			for _, child := range currentNode.Children {
+				if !visited[child.URL] {
+					visited[child.URL] = true
+					child.Parent = currentNode
+					stack = append(stack, child)
+				}
+			}
+		} 
 	}
-	return nil, false
-}
 
-func Backtrack(node *entities.Node, path []string) []string {
-	if node.Parent == nil {
-		// println("terakhir")
-		// println(node.URL)
-		path = append(path, node.URL)
-		return path
-	}
-	// println(node.URL)
-	path = append(path, node.URL)
-	// println(path)
-	nodes := node.Parent
-	return Backtrack(nodes, path)
-}
-
-func ReverseArray(arr []string) []string {
-	left := 0
-	right := len(arr) - 1
-
-	for left < right {
-		arr[left], arr[right] = arr[right], arr[left]
-		left++
-		right--
-	}
-	return arr
+	return nil
 }

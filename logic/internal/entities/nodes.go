@@ -1,15 +1,21 @@
 package entities
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 type Node struct {
 	URL      string
 	Parent   *Node
 	Children []*Node
 	Depth    int
+	mutex    sync.Mutex
 }
 
 func (n *Node) AddChild(child *Node) {
+	n.mutex.Lock()        // Lock before modifying
+	defer n.mutex.Unlock()
 	child.Parent = n
 	child.Depth = n.Depth + 1
 	n.Children = append(n.Children, child)
